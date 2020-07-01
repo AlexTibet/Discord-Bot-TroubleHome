@@ -23,21 +23,23 @@ class MyClient(discord.Client):
         # Добавление пользователей в базу данных
         for guild in self.guilds:   # для каждого сервера
             table = None
-            if guild.name == config.BoB_server_name:
+            if re.search(config.BoB_server_name, guild.name):
                 table = "BoB_Users"
-            elif guild.name == config.TheIsle_server_name:
+            if re.search(config.TheIsle_server_name, guild.name):
                 table = "TheIsle_Users"
-            for member in guild.members:    # для каждого участника сервера
-                member_status = False
-                accounts = sql_db.get_accounts(table)
-                for account in accounts:
-                    if account["discord_id"] == member.id:
-                        print(f"{member} уже есть в базе данных (Таблица: {table} ID:{member.id})")
-                        member_status = True
-                        break
-                if member_status is not True and table is not None:
-                    sql_db.create_account(table, member.id)
-                    print(f"{member} добавлен в базу данных (Таблица: {table} с ID:{member.id}")
+            if table is not None:
+                for member in guild.members:    # для каждого участника сервера
+                    member_status = False
+                    accounts = sql_db.get_accounts(table)
+                    for account in accounts:
+                        if account["discord_id"] == member.id:
+                            print(f"{member} уже есть в базе данных (Таблица: {table} ID:{member.id})")
+                            member_status = True
+                            break
+                    if member_status is not True and table is not None:
+                        sql_db.create_account(table, member.id)
+                        print(f"{member} добавлен в базу данных (Таблица: {table} с ID:{member.id}")
+                continue
 
     async def on_message(self, ctx):
         """Смотрим каждое сообщение в доступных каналах и выводим в консоль"""
