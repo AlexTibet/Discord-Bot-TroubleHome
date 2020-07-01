@@ -98,7 +98,6 @@ class SqliteDataStorage(DataStorage, ABC):
         return True
 
     def get_accounts(self, table: str) -> Iterable:
-        print(table)
         self._cursor.execute(f'SELECT * FROM {table}')
 
         for row in self._cursor:
