@@ -1,0 +1,6 @@
+**/.idea
+**/venv
+**/__pycache__
+**/history
+config.py
+TroubleHomeDB.db
