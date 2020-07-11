@@ -1,10 +1,11 @@
 import discord
 import re
+import requests
 
 import config
 from datastorage import SqliteDataStorage
 import gen_embedded_reply
-
+import message_handlers
 
 class MyClient(discord.Client):
 
@@ -45,8 +46,8 @@ class MyClient(discord.Client):
         """Смотрим каждое сообщение в доступных каналах и выводим в консоль"""
         print(f"{ctx.guild}| {ctx.channel} | {ctx.author} |{ctx.content}")
         channel = discord.Client.get_channel(self, ctx.channel.id)
+        message = ctx.content.split()
         if channel.id in config.ADMIN_CHANNEL:  # channel id list
-            message = ctx.content.split()
             try:
                 if re.search(r"[\d]{17}", message[0].split("/")[0].split("<")[0]):
                     steam_id = message[0].strip()
@@ -54,16 +55,17 @@ class MyClient(discord.Client):
                     await channel.send(steam_find_url)
             except IndexError:
                 pass
-        if channel.id in config.GAME_CHANNEL:  # channel id list
-            message = ctx.content.split()
+
             try:
-                if re.search(r"^[Кк]усь\b", message[0]) and '@' in message[1]:
-                    await channel.send(embed=await gen_embedded_reply.bite(ctx, message))
+                if re.search(r"^[Кк]ако[ЙйВв]\b", message[0]) and re.search(r"^[Оо]нлайн\b", message[1].replace('?', '')):
+                    await channel.send(embed=await gen_embedded_reply.online_info())
             except IndexError:
                 pass
 
+        if channel.id in config.GAME_CHANNEL:  # channel id list
+            await message_handlers.game_message(ctx, channel)
+
         if channel.id in config.DINO_CHANNEL:  # channel id list
-            message = ctx.content.split()
             try:
                 if re.search(r"^[Дд]ино\b", message[0]) and re.search(r"^[Ии]нфо\b", message[1]):
                     emb = await gen_embedded_reply.database_check(message)

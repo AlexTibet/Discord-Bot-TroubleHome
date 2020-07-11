@@ -4,6 +4,7 @@ import random
 import game_config
 import finde_and_download
 import dino_list
+import server_info
 
 
 async def database_check(message: list) -> discord.embeds:
@@ -46,6 +47,145 @@ async def bite(ctx, message: str) -> discord.embeds:
             value=f"<@{ctx.author.id}> обломал зубы об <@{victim}>")
         emb.set_image(url=gif_url)
         return emb
+
+
+async def who_am_i(ctx) -> discord.embeds:
+    """Игра 'Кто я?', случайно выбирается результат ответ"""
+    emb = discord.Embed()
+    emb.add_field(
+        name='Кто ты?!',
+        value=f"<@{ctx.author.id}> ты {random.choice(game_config.WHOAMI)}!")
+    return emb
+
+
+async def shipper(message: str) -> discord.embeds:
+    """Игра 'Шипперинг', случайно выбирается результат и gif"""
+    victim_one = message[1]
+    victim_two = message[2]
+    compatibility = [i for i in range(101)]
+    random.shuffle(compatibility)
+    compatibility = random.choice(compatibility)
+    heart = random.choice(game_config.SHIPPER_HEART)
+    title = None
+    if compatibility <= 20:
+        title = 'Ну такое...'
+    elif 20 < compatibility < 50:
+        title = 'Могут попробовать'
+    elif 50 <= compatibility < 70:
+        title = 'Хорошая пара'
+    elif 70 <= compatibility <= 85:
+        title = 'Отличная пара'
+    elif 85 < compatibility <= 95:
+        title = 'Идеальная пара'
+    elif compatibility > 95:
+        title = 'Созданы друг для друга!'
+    gif_url = random.choice(game_config.GIF_SHIPPER)
+    emb = discord.Embed(color=0xF08080)
+    emb.add_field(
+        name=f'{heart} {compatibility}% {heart}',
+        value=f"{victim_one} и {victim_two} {title}")
+    emb.set_image(url=gif_url)
+    return emb
+
+
+async def hug(ctx, message):
+    gif_url = random.choice(game_config.GIF_HUG)
+    emb = discord.Embed()
+    emb.add_field(
+        name=f'Обнимашки',
+        value=f"<@{ctx.author.id}> обнимает {message[1]}")
+    emb.set_image(url=gif_url)
+    return emb
+
+
+async def feed(ctx, message):
+    gif_url = random.choice(game_config.GIF_FEED)
+    emb = discord.Embed()
+    emb.add_field(
+        name=f'Ням ням',
+        value=f"<@{ctx.author.id}> кормит {message[1]}")
+    emb.set_image(url=gif_url)
+    return emb
+
+
+async def kiss(ctx, message):
+    gif_url = random.choice(game_config.GIF_KISS)
+    emb = discord.Embed()
+    emb.add_field(
+        name=f'Поцелуй',
+        value=f"<@{ctx.author.id}> целует {message[1]}")
+    emb.set_image(url=gif_url)
+    return emb
+
+
+async def love(ctx, message):
+    gif_url = random.choice(game_config.GIF_LOVE)
+    emb = discord.Embed()
+    emb.add_field(
+        name=f'Любовь',
+        value=f"<@{ctx.author.id}> любит {message[1]}")
+    emb.set_image(url=gif_url)
+    return emb
+
+
+async def hit(ctx, message):
+    gif_url = random.choice(game_config.GIF_HIT)
+    emb = discord.Embed()
+    emb.add_field(
+        name=f'Удар!',
+        value=f"<@{ctx.author.id}> бъёт {message[1]}")
+    emb.set_image(url=gif_url)
+    return emb
+
+
+async def slap(ctx, message):
+    gif_url = random.choice(game_config.GIF_SLAP)
+    emb = discord.Embed()
+    emb.add_field(
+        name=f'Шлёп!',
+        value=f"<@{ctx.author.id}> шлёпает {message[1]}")
+    emb.set_image(url=gif_url)
+    return emb
+
+
+async def poke(ctx, message):
+    gif_url = random.choice(game_config.GIF_POKE)
+    emb = discord.Embed()
+    emb.add_field(
+        name=f'Тык',
+        value=f"<@{ctx.author.id}> тыкает {message[1]}")
+    emb.set_image(url=gif_url)
+    return emb
+
+
+async def take_hand(ctx, message):
+    gif_url = random.choice(game_config.GIF_TAKEHAND)
+    emb = discord.Embed()
+    emb.add_field(
+        name=f'Взять за руку',
+        value=f"<@{ctx.author.id}> берёт за руку {message[3]}")
+    emb.set_image(url=gif_url)
+    return emb
+
+
+async def stroke(ctx, message):
+    gif_url = random.choice(game_config.GIF_STROKE)
+    emb = discord.Embed()
+    emb.add_field(
+        name=f'Погладить',
+        value=f"<@{ctx.author.id}> гладит {message[1]}")
+    emb.set_image(url=gif_url)
+    return emb
+
+
+async def sad(ctx):
+    gif_url = random.choice(game_config.GIF_SAD)
+    emb = discord.Embed()
+    emb.add_field(
+        name=f'Печаль',
+        value=f"<@{ctx.author.id}> грустит...")
+    emb.set_image(url=gif_url)
+    return emb
 
 
 async def dino_info(ctx, message: str) -> discord.embeds:
@@ -139,3 +279,20 @@ async def dino_catalog(channel: discord.object) -> None:
         name='Хищники:',
         value="\n".join(dino_list.CARNIVORES))
     await channel.send(embed=emb)
+
+
+async def online_info():
+    info = await server_info.bermuda_server_info()
+    if info is not None:
+        emb = discord.Embed(title=f"Игроков {info['players']['active']} из {info['players']['total']}",
+                            color=0xf6ff00)
+        emb.set_author(name="Онлайн" if info['is_online'] is True else "Оффлайн")
+        emb.add_field(
+            name='Название:',
+            value=info['name'])
+        emb.add_field(
+            name='Карта:',
+            value=info['map'])
+    else:
+        emb = discord.Embed(title=f'❌ Нет данных ❌', color=0xFF0000)
+    return emb
