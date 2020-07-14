@@ -2,6 +2,7 @@ import sqlite3
 
 from abc import abstractmethod, ABC
 from typing import Iterable
+import time
 from decorators import bot_logging
 
 
@@ -94,6 +95,22 @@ class SqliteDataStorage(DataStorage, ABC):
             WHERE Dis_ID={}
             """.format(table, coins, coins_history, user_id)
         )
+        self._connection.commit()
+        return True
+
+    @bot_logging
+    def create_marriage_tabel(self, server_name: str):
+        print('Создаю таблицу браков', server_name)
+        self._cursor.execute("""
+                                CREATE TABLE IF NOT EXISTS {}
+                                (
+                                Dis_ID              BIGINT UNIQUE NOT NULL,
+                                marriage            BIGINT DEFAULT NULL,
+                                date_of_marriage    TEXT
+                                marriage history    TEXT
+                                )
+                            """.format(server_name)
+                             )
         self._connection.commit()
         return True
 
