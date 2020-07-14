@@ -5,6 +5,7 @@ import game_config
 import finde_and_download
 import dino_list
 import server_info
+import game_logic
 
 
 async def database_check(message: list) -> discord.embeds:
@@ -29,10 +30,7 @@ async def player_not_found() -> discord.embeds:
 
 async def bite(ctx, message: str) -> discord.embeds:
     """Игра 'Кусь', случайно выбирается результат и цель укуса, каждому соответствует свой набор gif"""
-    victim = message[1].replace('<', '').replace('!', '').replace('@', '').replace('>', '').replace(',', '')
-    targets = random.choice(game_config.TARGET)
-    gif_id = targets[1]
-    target = targets[0]
+    target, victim, gif_id = await game_logic.bite_logic(message)
     emb = discord.Embed()
     gif_url = random.choice(game_config.GIF_KUS[gif_id])
     if target is not None:
@@ -60,26 +58,9 @@ async def who_am_i(ctx) -> discord.embeds:
 
 async def shipper(message: str) -> discord.embeds:
     """Игра 'Шипперинг', случайно выбирается результат и gif"""
-    victim_one = message[1]
-    victim_two = message[2]
-    compatibility = [i for i in range(101)]
-    random.shuffle(compatibility)
-    compatibility = random.choice(compatibility)
     heart = random.choice(game_config.SHIPPER_HEART)
-    title = None
-    if compatibility <= 20:
-        title = 'Ну такое...'
-    elif 20 < compatibility < 50:
-        title = 'Могут попробовать'
-    elif 50 <= compatibility < 70:
-        title = 'Хорошая пара'
-    elif 70 <= compatibility <= 85:
-        title = 'Отличная пара'
-    elif 85 < compatibility <= 95:
-        title = 'Идеальная пара'
-    elif compatibility > 95:
-        title = 'Созданы друг для друга!'
     gif_url = random.choice(game_config.GIF_SHIPPER)
+    victim_one, victim_two, compatibility, title = await game_logic.shipper_logic(message)
     emb = discord.Embed(color=0xF08080)
     emb.add_field(
         name=f'{heart} {compatibility}% {heart}',
@@ -133,7 +114,7 @@ async def hit(ctx, message):
     emb = discord.Embed()
     emb.add_field(
         name=f'Удар!',
-        value=f"<@{ctx.author.id}> бъёт {message[1]}")
+        value=f"<@{ctx.author.id}> бьёт {message[1]}")
     emb.set_image(url=gif_url)
     return emb
 
@@ -186,6 +167,19 @@ async def sad(ctx):
         value=f"<@{ctx.author.id}> грустит...")
     emb.set_image(url=gif_url)
     return emb
+
+# В разработке
+# async def marriage(ctx, message):
+#     emb = discord.Embed(title='``Новое предложение руки и сердца!`` :couple_with_heart:', color=0xF08080)
+#     emb.add_field(
+#         name=f':white_check_mark: = Да.  :negative_squared_cross_mark: = Нет ',
+#         value=f'{message[1]} даёшь ли ты своё согласие на брак c <@{ctx.author.id}>?')
+#     return emb
+#
+#
+# async def marriage_accept(ctx, message):
+#     emb = discord.Embed(title=':ring:  :tada:')
+#     return emb
 
 
 async def dino_info(ctx, message: str) -> discord.embeds:
