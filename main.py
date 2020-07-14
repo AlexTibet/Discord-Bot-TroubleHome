@@ -7,6 +7,7 @@ from datastorage import SqliteDataStorage
 import gen_embedded_reply
 import message_handlers
 
+
 class MyClient(discord.Client):
 
     async def on_ready(self):
@@ -23,6 +24,8 @@ class MyClient(discord.Client):
         print("Connection to the database is complete.")
         # Добавление пользователей в базу данных
         for guild in self.guilds:   # для каждого сервера
+            # создаём таблицы браков (для хранения данных о "браках" пользователей)
+            sql_db.create_marriage_tabel(guild.name.strip().replace(' ', '_'))  # нельзя чтобы в названии был пробел
             table = None
             if re.search(config.BoB_server_name, guild.name):
                 table = "BoB_Users"
@@ -43,7 +46,7 @@ class MyClient(discord.Client):
                 continue
 
     async def on_message(self, ctx):
-        """Смотрим каждое сообщение в доступных каналах и выводим в консоль"""
+        """Смотрим каждое сообщение в доступных каналах и выводим в консоль, обрабатываем"""
         print(f"{ctx.guild}| {ctx.channel} | {ctx.author} |{ctx.content}")
         channel = discord.Client.get_channel(self, ctx.channel.id)
         message = ctx.content.split()
