@@ -1,6 +1,5 @@
 import re
 import gen_embedded_reply
-import discord
 import asyncio
 
 
