@@ -439,7 +439,9 @@ GIF_POKE = [
     'https://i.gifer.com/AfDr.gif',
     'https://thumbs.gfycat.com/EnlightenedInferiorAfricanaugurbuzzard-size_restricted.gif',
     'https://i.gifer.com/QCGQ.gif',
-    'https://i.gifer.com/2ecv.gif'
+    'https://i.gifer.com/2ecv.gif',
+    'https://media1.tenor.com/images/a6f8bfa9e0e435db7d8bb13d2bc0d871/tenor.gif',
+    'https://media1.tenor.com/images/f3fdc09c1595009106517d5750a3a466/tenor.gif'
 
 ]
 
