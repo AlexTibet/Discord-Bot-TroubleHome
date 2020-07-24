@@ -1,9 +1,10 @@
 import re
 import gen_embedded_reply
 import asyncio
+import discord
 
 
-async def game_message(ctx, channel):
+async def game_message(ctx, channel, bot):
     message = ctx.content.split()
     try:
         for i in message:
@@ -55,27 +56,24 @@ async def game_message(ctx, channel):
             await channel.send(embed=await gen_embedded_reply.sad(ctx))
 
         if re.search(r"^[Бб]рак\b", message[0]) and re.search(r"[\d]{18}", message[1]):
-            marry_message = await channel.send(embed=await gen_embedded_reply.marriage(ctx, message))
-            print(marry_message)
-            print(marry_message.id)
-            await marry_message.add_reaction('✅')
-            await marry_message.add_reaction('❎')
+            marriage_msg = await channel.send(embed=await gen_embedded_reply.marriage(ctx, message))
+            await marriage_msg.add_reaction('✅')
+            await marriage_msg.add_reaction('❎')
+            husband = discord.Client.get_user(bot, ctx.author.id)
+            wife = discord.Client.get_user(bot, int(message[1].replace('<', '').replace('!', '').replace('@', '').replace('>', '').replace(',', '')))
             try:
-                member = None
-                members = marry_message.guild.members
-                message[1] = message[1].replace('<', '').replace('!', '').replace('@', '').replace('?', '').replace('>',
-                                                                                                                    '').replace(
-                    ',', '')
-                for i in members:
-                    print(i, i.id, message[1])
-                    if i.id == int(message[1]):
-                        member = i
-                        print('\n!!!\n', member, '\n')
-                print(member)
-                if await marry_message.reaction_add('✅', member, timeout=60.0):
-                    await channel.send('получилось')
+                answer = await discord.Client.wait_for(bot, event='reaction_add', check=lambda reaction, user: user == wife, timeout=60.0)
+                # print(answer) (<Reaction emoji='✅' me=True count=2>, <Member id=200987782674513921 name='Pixelcat' discriminator='3840' bot=False nick=None guild=<Guild id=585729392907517962 name='TIbetTestDis' shard_id=None chunked=True member_count=20>>)
+                print(answer[0].emoji)
+                if answer[0].emoji == '✅':
+                    await channel.send(embed=await gen_embedded_reply.marriage_accept(husband.id, wife.id))
+
+                if answer[0].emoji == '❎':
+                    await channel.send(embed=await gen_embedded_reply.marriage_rejected(husband.id, wife.id))
             except asyncio.TimeoutError:
-                await channel.send('👎')
+                await channel.send(embed=await gen_embedded_reply.marriage_rejected(husband.id, wife.id))
+
+
 
     except IndexError:
         pass  # просто сообщение, не команда
