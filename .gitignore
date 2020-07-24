@@ -4,3 +4,5 @@
 **/history
 config.py
 TroubleHomeDB.db
+bot_logs.txt
+server_info.py
