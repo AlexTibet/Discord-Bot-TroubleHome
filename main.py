@@ -46,7 +46,7 @@ class MyClient(discord.Client):
                 continue
 
     async def on_message(self, ctx):
-        """Смотрим каждое сообщение в доступных каналах и выводим в консоль, обрабатываем"""
+        """Смотрим каждое сообщение в доступных каналах, выводим в консоль и обрабатываем"""
         print(f"{ctx.guild}| {ctx.channel} | {ctx.author} |{ctx.content}")
         channel = discord.Client.get_channel(self, ctx.channel.id)
         message = ctx.content.split()
@@ -66,7 +66,7 @@ class MyClient(discord.Client):
                 pass
 
         if channel.id in config.GAME_CHANNEL:  # channel id list
-            await message_handlers.game_message(ctx, channel)
+            await message_handlers.game_message(ctx, channel, self)
 
         if channel.id in config.DINO_CHANNEL:  # channel id list
             try:
