@@ -1,5 +1,6 @@
 import discord
 import random
+import requests
 
 import game_config
 import finde_and_download
@@ -168,18 +169,34 @@ async def sad(ctx):
     emb.set_image(url=gif_url)
     return emb
 
+
 # В разработке
-# async def marriage(ctx, message):
-#     emb = discord.Embed(title='``Новое предложение руки и сердца!`` :couple_with_heart:', color=0xF08080)
-#     emb.add_field(
-#         name=f':white_check_mark: = Да.  :negative_squared_cross_mark: = Нет ',
-#         value=f'{message[1]} даёшь ли ты своё согласие на брак c <@{ctx.author.id}>?')
-#     return emb
-#
-#
-# async def marriage_accept(ctx, message):
-#     emb = discord.Embed(title=':ring:  :tada:')
-#     return emb
+async def marriage(ctx, message):
+    emb = discord.Embed(title='``Новое предложение руки и сердца!`` :couple_with_heart:', color=0xF08080)
+    emb.add_field(
+        name=f':white_check_mark: = Да.  :negative_squared_cross_mark: = Нет ',
+        value=f'{message[1]} даёшь ли ты своё согласие на брак c <@{ctx.author.id}>?')
+    return emb
+
+
+async def marriage_accept(husband_id, wife_id):
+    gif_url = random.choice(game_config.GIF_MARRIAGE)
+    emb = discord.Embed(title='💝:tada:💖', color=0xF08080)
+    emb.add_field(
+        name=f'Новый союз двух любящих сердец :ring:',
+        value=f"С этого дня <@{husband_id}> и <@{wife_id}> в счастливом браке! :tada:")
+    emb.set_image(url=gif_url)
+    return emb
+
+
+async def marriage_rejected(husband_id, wife_id):
+    gif_url = random.choice(game_config.GIF_SAD)
+    emb = discord.Embed(title='💔', color=0xF08080)
+    emb.add_field(
+        name=f'Отвергнут',
+        value=f"<@{wife_id}> отвергает <@{husband_id}>")
+    emb.set_image(url=gif_url)
+    return emb
 
 
 async def dino_info(ctx, message: str) -> discord.embeds:
@@ -290,3 +307,12 @@ async def online_info():
     else:
         emb = discord.Embed(title=f'❌ Нет данных ❌', color=0xFF0000)
     return emb
+
+
+async def steam_id_info(steam_id):
+    session = requests.Session()
+    bermuda_info = session.post(f'https://steamidfinder.com/lookup/{steam_id}/')
+    if bermuda_info.status_code == 200:
+        return bermuda_info.json()
+    else:
+        return None
