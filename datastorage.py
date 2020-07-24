@@ -102,12 +102,13 @@ class SqliteDataStorage(DataStorage, ABC):
     def create_marriage_tabel(self, server_name: str):
         print('Создаю таблицу браков', server_name)
         self._cursor.execute("""
-                                CREATE TABLE IF NOT EXISTS {}
+                                CREATE TABLE IF NOT EXISTS marriage_{}
                                 (
                                 Dis_ID              BIGINT UNIQUE NOT NULL,
-                                marriage            BIGINT DEFAULT NULL,
-                                date_of_marriage    TEXT
-                                marriage history    TEXT
+                                spouse              BIGINT DEFAULT NULL,
+                                date_of_marriage    TEXT,
+                                marriage_history    TEXT,
+                                marriage_count      INT DEFAULT 0
                                 )
                             """.format(server_name)
                              )
@@ -128,6 +129,21 @@ class SqliteDataStorage(DataStorage, ABC):
         self._cursor.execute(f'SELECT * FROM {table} ORDER BY RANDOM() LIMIT 1')
         return self.__extract_object(self._cursor.fetchone())
 
+    def get_marriage_account(self, table: str, discord_id: int) -> dict:
+        self._cursor.execute(f'SELECT * FROM {table} WHERE Dis_ID={discord_id}')
+        return self.__extract_marriage_object(self._cursor.fetchone())
+
+    def set_marriage_account(self, table, discord_id: int, spouse: int, date: str, history: str, count: int) -> True or None:
+        self._cursor.execute(
+            """
+            UPDATE marriage_{}
+            SET spouse = {}, date_of_marriage = {}, marriage_history = {}, marriage_count = {},
+            WHERE Dis_ID={}
+            """.format(table, spouse, date, history, count, discord_id)
+        )
+        self._connection.commit()
+        return True
+
     @staticmethod
     def __extract_object(row: list) -> dict:
         return {
@@ -135,5 +151,15 @@ class SqliteDataStorage(DataStorage, ABC):
             'steam_id': row[1],
             't_coins': row[2],
             't_coins_history': row[3],
+        } if row else None
+
+    @staticmethod
+    def __extract_marriage_object(row: list) -> dict:
+        return {
+            'discord_id': row[0],
+            'spouse': row[1],
+            'date_of_marriage': row[2],
+            'marriage_history': row[3],
+            'marriage_count': row[4],
         } if row else None
 
