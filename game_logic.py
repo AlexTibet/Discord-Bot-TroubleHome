@@ -1,5 +1,11 @@
 import random
 import game_config
+import discord
+from datastorage import SqliteDataStorage
+import datetime
+import gen_embedded_reply
+import config
+import asyncio
 
 
 async def bite_logic(message: str) -> (str, str, str):
@@ -30,3 +36,43 @@ async def shipper_logic(message: str) -> (str, str, str, str):
     elif compatibility > 95:
         title = 'Созданы друг для друга!'
     return victim_one, victim_two, compatibility, title
+
+
+async def marriage_check_wife(ctx, message, bot):
+    wife = discord.Client.get_user(bot, int(
+        message[1].replace('<', '').replace('!', '').replace('@', '').replace('>', '').replace(',', '')))
+    wife_member = ctx.author.guild.get_member(wife.id)
+    for role in wife_member.roles:
+        if role.id == config.MARRIAGE_ROLE:
+            return True
+    return False
+
+
+async def marriage_check_husband(ctx):
+    husband = ctx.author
+    for role in husband.roles:
+        if role.id == config.MARRIAGE_ROLE:
+            return True
+    return False
+
+
+async def marriage_logic(ctx, message, bot):
+    husband = discord.Client.get_user(bot, ctx.author.id)
+    wife = discord.Client.get_user(bot, int(
+        message[1].replace('<', '').replace('!', '').replace('@', '').replace('>', '').replace(',', '')))
+    try:
+        answer = await discord.Client.wait_for(bot,
+                                               event='reaction_add',
+                                               check=lambda reaction, user: user == wife,
+                                               timeout=60.0)
+        # print(answer) (<Reaction emoji='✅' me=True count=2>, <Member id=200987782674513921 name='Pixelcat' discriminator='3840' bot=False nick=None guild=<Guild id=585729392907517962 name='TIbetTestDis' shard_id=None chunked=True member_count=20>>)
+        if answer[0].emoji == '✅':
+            marriage_role = discord.utils.get(ctx.author.guild.roles, id=config.MARRIAGE_ROLE)
+            wife_member = ctx.author.guild.get_member(wife.id)
+            await wife_member.add_roles(marriage_role)
+            await ctx.author.add_roles(marriage_role)
+            return await gen_embedded_reply.marriage_accept(husband.id, wife.id)
+        elif answer[0].emoji == '❎':
+            return await gen_embedded_reply.marriage_rejected(husband.id, wife.id)
+    except asyncio.TimeoutError:
+        return await gen_embedded_reply.marriage_rejected(husband.id, wife.id)
