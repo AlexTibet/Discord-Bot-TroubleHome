@@ -7,6 +7,8 @@ import finde_and_download
 import dino_list
 import server_info
 import game_logic
+from datastorage import SqliteDataStorage as sql_db
+import config
 
 
 async def database_check(message: list) -> discord.embeds:
@@ -50,6 +52,7 @@ async def bite(ctx, message: str) -> discord.embeds:
 
 async def who_am_i(ctx) -> discord.embeds:
     """Игра 'Кто я?', случайно выбирается результат ответ"""
+    random.shuffle(game_config.WHOAMI)
     emb = discord.Embed()
     emb.add_field(
         name='Кто ты?!',
@@ -71,6 +74,7 @@ async def shipper(message: str) -> discord.embeds:
 
 
 async def hug(ctx, message):
+    random.shuffle(game_config.GIF_HUG)
     gif_url = random.choice(game_config.GIF_HUG)
     emb = discord.Embed()
     emb.add_field(
@@ -81,6 +85,7 @@ async def hug(ctx, message):
 
 
 async def feed(ctx, message):
+    random.shuffle(game_config.GIF_FEED)
     gif_url = random.choice(game_config.GIF_FEED)
     emb = discord.Embed()
     emb.add_field(
@@ -91,6 +96,7 @@ async def feed(ctx, message):
 
 
 async def kiss(ctx, message):
+    random.shuffle(game_config.GIF_KISS)
     gif_url = random.choice(game_config.GIF_KISS)
     emb = discord.Embed()
     emb.add_field(
@@ -101,6 +107,7 @@ async def kiss(ctx, message):
 
 
 async def love(ctx, message):
+    random.shuffle(game_config.GIF_LOVE)
     gif_url = random.choice(game_config.GIF_LOVE)
     emb = discord.Embed()
     emb.add_field(
@@ -111,6 +118,7 @@ async def love(ctx, message):
 
 
 async def hit(ctx, message):
+    random.shuffle(game_config.GIF_HIT)
     gif_url = random.choice(game_config.GIF_HIT)
     emb = discord.Embed()
     emb.add_field(
@@ -121,6 +129,7 @@ async def hit(ctx, message):
 
 
 async def slap(ctx, message):
+    random.shuffle(game_config.GIF_SLAP)
     gif_url = random.choice(game_config.GIF_SLAP)
     emb = discord.Embed()
     emb.add_field(
@@ -131,6 +140,7 @@ async def slap(ctx, message):
 
 
 async def poke(ctx, message):
+    random.shuffle(game_config.GIF_POKE)
     gif_url = random.choice(game_config.GIF_POKE)
     emb = discord.Embed()
     emb.add_field(
@@ -141,6 +151,7 @@ async def poke(ctx, message):
 
 
 async def take_hand(ctx, message):
+    random.shuffle(game_config.GIF_TAKEHAND)
     gif_url = random.choice(game_config.GIF_TAKEHAND)
     emb = discord.Embed()
     emb.add_field(
@@ -151,6 +162,7 @@ async def take_hand(ctx, message):
 
 
 async def stroke(ctx, message):
+    random.shuffle(game_config.GIF_STROKE)
     gif_url = random.choice(game_config.GIF_STROKE)
     emb = discord.Embed()
     emb.add_field(
@@ -166,6 +178,106 @@ async def sad(ctx):
     emb.add_field(
         name=f'Печаль',
         value=f"<@{ctx.author.id}> грустит...")
+    emb.set_image(url=gif_url)
+    return emb
+
+
+async def lick(ctx, message):
+    random.shuffle(game_config.GIF_LICK)
+    gif_url = random.choice(game_config.GIF_LICK)
+    emb = discord.Embed()
+    emb.add_field(
+        name=f'Лизь',
+        value=f"<@{ctx.author.id}> облизывает {message[1]}")
+    emb.set_image(url=gif_url)
+    return emb
+
+
+async def sex(ctx, message):
+    gif_url = random.choice(game_config.GIF_SEX)
+    emb = discord.Embed()
+    emb.add_field(
+        name=f'Секс',
+        value=f"<@{ctx.author.id}> занимается сексом с {message[1]}")
+    emb.set_image(url=gif_url)
+    print(ctx)
+    db = sql_db(config.db_name)
+    db.set_sex_in_marriage_account(ctx.guild.name.strip().replace(' ', '_'), ctx.author.id, ctx.raw_mentions[0])
+    db.set_sex_in_marriage_account(ctx.guild.name.strip().replace(' ', '_'), ctx.raw_mentions[0], ctx.author.id)
+    return emb
+
+
+async def sex_history(ctx):
+    db = sql_db(config.db_name)
+    proshmandovki = db.get_marriage_accounts(f"{ctx.guild.name.strip().replace(' ', '_')}")
+    for i in proshmandovki:
+        print(i)
+
+
+async def anger(ctx):
+    random.shuffle(game_config.GIF_ANGER)
+    gif_url = random.choice(game_config.GIF_ANGER)
+    emb = discord.Embed()
+    emb.add_field(
+        name=f'Злость',
+        value=f"<@{ctx.author.id}> злится")
+    emb.set_image(url=gif_url)
+    return emb
+
+
+async def smoke(ctx):
+    random.shuffle(game_config.GIF_SMOKE)
+    gif_url = random.choice(game_config.GIF_SMOKE)
+    emb = discord.Embed()
+    if len(ctx.raw_mentions) > 0:
+        paty = ''
+        for i in ctx.raw_mentions:
+            paty += f' <@{i}>'
+        emb.add_field(
+            name=f'Курить',
+            value=f"<@{ctx.author.id}>{paty} курят 🚬")
+    else:
+        emb.add_field(
+            name=f'Курить',
+            value=f"<@{ctx.author.id}> курит 🚬")
+    emb.set_image(url=gif_url)
+    return emb
+
+
+async def hookah(ctx):
+    random.shuffle(game_config.GIF_HOOKAH)
+    gif_url = random.choice(game_config.GIF_HOOKAH)
+    emb = discord.Embed()
+    if len(ctx.raw_mentions) > 0:
+        paty = ''
+        for i in ctx.raw_mentions:
+            paty += f' <@{i}>'
+        emb.add_field(
+            name=f'Курить',
+            value=f"<@{ctx.author.id}>{paty} курят кальян")
+    else:
+        emb.add_field(
+            name=f'Кальян',
+            value=f"<@{ctx.author.id}> курит кальян")
+    emb.set_image(url=gif_url)
+    return emb
+
+
+async def drink(ctx):
+    random.shuffle(game_config.GIF_HOOKAH)
+    gif_url = random.choice(game_config.GIF_DRINK)
+    emb = discord.Embed()
+    if len(ctx.raw_mentions) > 0:
+        paty = ''
+        for i in ctx.raw_mentions:
+            paty += f' <@{i}>'
+        emb.add_field(
+            name=f'Бухать!',
+            value=f"<@{ctx.author.id}>{paty} бухают вместе")
+    else:
+        emb.add_field(
+            name=f'Бухать!',
+            value=f"<@{ctx.author.id}> бухает")
     emb.set_image(url=gif_url)
     return emb
 
@@ -196,6 +308,14 @@ async def marriage_rejected(husband_id, wife_id):
         name=f'Отвергнут',
         value=f"<@{wife_id}> отвергает <@{husband_id}>")
     emb.set_image(url=gif_url)
+    return emb
+
+
+async def marriage_fail(discord_id):
+    emb = discord.Embed(color=0xF08080)
+    emb.add_field(
+        name=f'Есть одна проблемка',
+        value=f"<@{discord_id}> уже в браке")
     return emb
 
 
