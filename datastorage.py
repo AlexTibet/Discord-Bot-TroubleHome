@@ -2,7 +2,7 @@ import sqlite3
 
 from abc import abstractmethod, ABC
 from typing import Iterable
-import time
+import datetime
 from decorators import bot_logging
 
 
@@ -108,7 +108,9 @@ class SqliteDataStorage(DataStorage, ABC):
                                 spouse              BIGINT DEFAULT NULL,
                                 date_of_marriage    TEXT,
                                 marriage_history    TEXT,
-                                marriage_count      INT DEFAULT 0
+                                marriage_count      INT DEFAULT 0,
+                                sex_count           INT DEFAULT 0,
+                                sex_history         TEXT
                                 )
                             """.format(server_name)
                              )
@@ -120,6 +122,12 @@ class SqliteDataStorage(DataStorage, ABC):
 
         for row in self._cursor:
             yield self.__extract_object(row)
+
+    def get_marriage_accounts(self, table: str) -> Iterable:
+        self._cursor.execute(f'SELECT * FROM {table}')
+
+        for row in self._cursor:
+            yield self.__extract_marriage_object(row)
 
     def get_account(self, table: str, user_id: int) -> dict:
         self._cursor.execute(f'SELECT * FROM {table} WHERE Dis_ID={user_id}')
@@ -133,13 +141,52 @@ class SqliteDataStorage(DataStorage, ABC):
         self._cursor.execute(f'SELECT * FROM {table} WHERE Dis_ID={discord_id}')
         return self.__extract_marriage_object(self._cursor.fetchone())
 
-    def set_marriage_account(self, table, discord_id: int, spouse: int, date: str, history: str, count: int) -> True or None:
+    @bot_logging
+    def set_marriage_account(self, table, discord_id: int, spouse: int) -> True or None:
+        date = datetime.date.today()
+        old_data = self.get_marriage_account(f'marriage_{table}', discord_id)
+        history = old_data['marriage_history'] + f'{date}|{spouse} '
+        count = int(old_data['marriage_count']) + 1
         self._cursor.execute(
             """
             UPDATE marriage_{}
             SET spouse = {}, date_of_marriage = {}, marriage_history = {}, marriage_count = {},
             WHERE Dis_ID={}
             """.format(table, spouse, date, history, count, discord_id)
+        )
+        self._connection.commit()
+        return True
+
+    # @bot_logging
+    def set_sex_in_marriage_account(self, table, discord_id: int, sex_partner: int) -> True or None:
+        old_data = self.get_marriage_account(f'marriage_{table}', discord_id)
+        if old_data is None:
+            self._cursor.execute("INSERT INTO {} (Dis_ID) VALUES({})".format(f'marriage_{table}', discord_id))
+            self._connection.commit()
+            new_history = f'{sex_partner}:1 '
+            count = 1
+        else:
+            new_history = ''
+            try:
+                history = old_data['sex_history'].split()
+                his_dict = {}
+                for partner in history:
+                    his_dict[int(partner.split(':')[0])] = int(partner.split(':')[1])
+                try:
+                    his_dict[sex_partner] += 1
+                except KeyError:
+                    his_dict[sex_partner] = 1
+                for key, value in his_dict.items():
+                    new_history += f'{key}:{value} '
+            except AttributeError:
+                new_history = f'{sex_partner}:1 '
+            count = int(old_data['sex_count']) + 1
+        self._cursor.execute(
+            """
+            UPDATE  {}
+            SET     sex_history = '{}', sex_count = {}
+            WHERE   Dis_ID={}
+            """.format(f'marriage_{table}', new_history, count, discord_id)
         )
         self._connection.commit()
         return True
@@ -161,5 +208,7 @@ class SqliteDataStorage(DataStorage, ABC):
             'date_of_marriage': row[2],
             'marriage_history': row[3],
             'marriage_count': row[4],
+            'sex_count': row[5],
+            'sex_history': row[6]
         } if row else None
 
