@@ -6,9 +6,6 @@ import game_logic
 async def game_message(ctx, channel, bot):
     message = ctx.content.split()
     try:
-        for i in message:
-            i.replace('<', '').replace('!', '').replace('@', '').replace('?', '').replace('>', '').replace(',', '')
-
         if re.search(r"^[Кк]усь\b", message[0]) and re.search(r"[\d]{18}", message[1]):
             await channel.send(embed=await gen_embedded_reply.bite(ctx, message))
 
@@ -22,7 +19,7 @@ async def game_message(ctx, channel, bot):
             await channel.send(embed=await gen_embedded_reply.hug(ctx, message))
 
         elif re.search(r"^[Пп]окормить\b", message[0]) and re.search(r"[\d]{18}", message[1]):
-            await channel.send(embed=await gen_embedded_reply.feed(ctx, message))
+            await channel.send(embed=await gen_embedded_reply.feed(ctx))
 
         elif (re.search(r"^[Пп]оцеловать\b", message[0]) or re.search(r"^[Зз]асосать\b", message[0]) or
                 re.search(r"^[Цц]еловать\b", message[0])) and re.search(r"[\d]{18}", message[1]):
@@ -55,10 +52,6 @@ async def game_message(ctx, channel, bot):
                 r"[\d]{18}", message[1]):
             await channel.send(embed=await gen_embedded_reply.lick(ctx, message))
 
-        elif (re.search(r"^[Сс]екс\b", message[0]) or re.search(r"^[Тт]рахнуть\b", message[0])) and re.search(
-                r"[\d]{18}", message[1]):
-            await channel.send(embed=await gen_embedded_reply.sex(ctx, message))
-
         elif re.search(r"^[Гг]русть\b", message[0]) or re.search(r"^[Пп]ечаль\b", message[0]):
             await channel.send(embed=await gen_embedded_reply.sad(ctx))
 
@@ -77,18 +70,29 @@ async def game_message(ctx, channel, bot):
         elif re.search(r"^[Бб]рак\b", message[0]) and re.search(r"[\d]{18}", message[1]):
             if await game_logic.marriage_check_husband(ctx):
                 await channel.send(embed=await gen_embedded_reply.marriage_fail(ctx.author.id))
-            elif await game_logic.marriage_check_wife(ctx, message, bot):
+            elif await game_logic.marriage_check_wife(ctx, bot):
                 await channel.send(embed=await gen_embedded_reply.marriage_fail(ctx.raw_mentions[0]))
             else:
-                marriage_msg = await channel.send(embed=await gen_embedded_reply.marriage(ctx, message))
+                marriage_msg = await channel.send(embed=await gen_embedded_reply.marriage(ctx))
                 await marriage_msg.add_reaction('✅')
                 await marriage_msg.add_reaction('❎')
-                await channel.send(embed=await game_logic.marriage_logic(ctx, message, bot))
+                await channel.send(embed=await game_logic.marriage_logic(ctx, bot))
 
-        elif re.search(r"^[Пп]рошмандовки\b", message[0]):
+        elif (re.search(r"^[Сс]екс\b", message[0]) or re.search(r"^[Тт]рахнуть\b", message[0])) and re.search(
+                r"[\d]{18}", message[1]):
+            if channel.id == 739370283571478590:
+                await channel.send(embed=await gen_embedded_reply.sex_accept(ctx.author.id, ctx.raw_mentions[0]))
+            else:
+                marriage_msg = await channel.send(embed=await gen_embedded_reply.sex(ctx))
+                await marriage_msg.add_reaction('✅')
+                await marriage_msg.add_reaction('❎')
+                await channel.send(embed=await game_logic.sex_logic(ctx, bot))
+
+        elif re.search(r"^[Бб]раки\b", message[0]):
+            await channel.send(embed=await gen_embedded_reply.marriage_history(ctx))
+
+        elif re.search(r"^[Ии]стория\b", message[0]) and re.search(r"сексов\b", message[1]):
             await channel.send(embed=await gen_embedded_reply.sex_history(ctx))
-
-
 
     except IndexError:
         pass  # просто сообщение, не команда
