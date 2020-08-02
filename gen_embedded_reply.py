@@ -1,6 +1,7 @@
 import discord
 import random
 import requests
+import datetime
 
 import game_config
 import finde_and_download
@@ -84,13 +85,13 @@ async def hug(ctx, message):
     return emb
 
 
-async def feed(ctx, message):
+async def feed(ctx):
     random.shuffle(game_config.GIF_FEED)
     gif_url = random.choice(game_config.GIF_FEED)
     emb = discord.Embed()
     emb.add_field(
         name=f'Ням ням',
-        value=f"<@{ctx.author.id}> кормит {message[1]}")
+        value=f"<@{ctx.author.id}> кормит {ctx.raw_mentions[0]}")
     emb.set_image(url=gif_url)
     return emb
 
@@ -193,25 +194,73 @@ async def lick(ctx, message):
     return emb
 
 
-async def sex(ctx, message):
+async def sex(ctx):
+    emb = discord.Embed()
+    emb.add_field(
+        name=f':white_check_mark: = Да.  :negative_squared_cross_mark: = Нет ',
+        value=f'<@{ctx.raw_mentions[0]}> даёшь ли ты своё согласие на секс c <@{ctx.author.id}>?')
+    return emb
+
+
+async def sex_accept(husband, wife):
     gif_url = random.choice(game_config.GIF_SEX)
     emb = discord.Embed()
     emb.add_field(
         name=f'Секс',
-        value=f"<@{ctx.author.id}> занимается сексом с {message[1]}")
+        value=f"<@{husband}> занимается сексом с <@{wife}>")
     emb.set_image(url=gif_url)
-    print(ctx)
-    db = sql_db(config.db_name)
-    db.set_sex_in_marriage_account(ctx.guild.name.strip().replace(' ', '_'), ctx.author.id, ctx.raw_mentions[0])
-    db.set_sex_in_marriage_account(ctx.guild.name.strip().replace(' ', '_'), ctx.raw_mentions[0], ctx.author.id)
     return emb
 
 
 async def sex_history(ctx):
     db = sql_db(config.db_name)
-    proshmandovki = db.get_marriage_accounts(f"{ctx.guild.name.strip().replace(' ', '_')}")
-    for i in proshmandovki:
-        print(i)
+    history = db.get_marriage_accounts(f"marriage_{ctx.guild.name.strip().replace(' ', '_')}")
+    emb = discord.Embed(title=f"{ctx.guild.name} 🔞💦")
+    sex_count = {}
+    sex_history = {}
+    for member in history:
+        print(member)
+        if member['sex_count'] is not None:
+            sex_count[member['discord_id']] = member['sex_count']
+            sex_history[member['discord_id']] = member['sex_history'].split()
+    text = ''
+    for member, history in sex_history.items():
+        print(member, history)
+        partners = ''
+        for partner in sex_history[member]:
+            print(partner)
+            partners += f"\n<@{partner.split(':')[0]}> - {partner.split(':')[1]} раз"
+        text += f"\n\nУ <@{member}> секс был {sex_count[member]} раз.\nПартнёры: {partners}"
+        print(text)
+    emb.add_field(
+        name=f"~~Прошмандовки~~\n",
+        value=text)
+    return emb
+
+
+async def marriage_history(ctx):
+    db = sql_db(config.db_name)
+    history = db.get_marriage_accounts(f"marriage_{ctx.guild.name.strip().replace(' ', '_')}")
+    date_now = datetime.date.today()
+    emb = discord.Embed()
+    marriages = {}
+    marriages_date = {}
+    for member in history:
+        if member['spouse'] is not None and member['spouse'] not in marriages.keys():
+            marriages[member['discord_id']] = member['spouse']
+            print(member)
+            print(member["date_of_marriage"].split(':'))
+            year, month, day = member["date_of_marriage"].split(':')
+            marriage_date = datetime.date(int(year), int(month), int(day))
+            marriage_days = date_now - marriage_date
+            marriages_date[member['discord_id']] = marriage_days.days
+    text = ''
+    for i in marriages.keys():
+        text += f"\n<@{i}> в браке с <@{marriages[i]}> уже **{marriages_date[i]}** дней :cupid:\n"
+    emb.add_field(
+        name=f"\nЛюди, которые нашли друг друга\nна {ctx.guild.name} :revolving_hearts:\n",
+        value=text)
+    return emb
 
 
 async def anger(ctx):
@@ -283,11 +332,11 @@ async def drink(ctx):
 
 
 # В разработке
-async def marriage(ctx, message):
+async def marriage(ctx):
     emb = discord.Embed(title='``Новое предложение руки и сердца!`` :couple_with_heart:', color=0xF08080)
     emb.add_field(
         name=f':white_check_mark: = Да.  :negative_squared_cross_mark: = Нет ',
-        value=f'{message[1]} даёшь ли ты своё согласие на брак c <@{ctx.author.id}>?')
+        value=f'<@{ctx.raw_mentions[0]}> даёшь ли ты своё согласие на брак c <@{ctx.author.id}>?')
     return emb
 
 
