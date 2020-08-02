@@ -60,7 +60,7 @@ class MyClient(discord.Client):
                 pass
 
             try:
-                if re.search(r"^[Кк]ако[ЙйВв]\b", message[0]) and re.search(r"^[Оо]нлайн\b", message[1].replace('?', '')):
+                if re.search(r"^[Кк]ако[йв]\b", message[0]) and re.search(r"^[Оо]нлайн\b", message[1].replace('?', '')):
                     await channel.send(embed=await gen_embedded_reply.online_info())
             except IndexError:
                 pass
