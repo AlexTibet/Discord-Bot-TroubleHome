@@ -61,6 +61,18 @@ async def who_am_i(ctx) -> discord.embeds:
     return emb
 
 
+async def who_should_i_play(ctx) -> discord.embeds:
+    emb = discord.Embed(color=0x2F4F4F)
+    play_list = [i for i in game_config.BOB_DINO_EMOJI.keys()]
+    random.shuffle(play_list)
+    play = random.choice(play_list)
+    emb.add_field(
+        name='На ком поиграть?',
+        value=f"<@{ctx.author.id}> поиграй на {play}")
+    emb.set_image(url=game_config.BOB_DINO_EMOJI[play])
+    return emb
+
+
 async def shipper(message: str) -> discord.embeds:
     """Игра 'Шипперинг', случайно выбирается результат и gif"""
     heart = random.choice(game_config.SHIPPER_HEART)
@@ -125,6 +137,17 @@ async def hit(ctx, message):
     emb.add_field(
         name=f'Удар!',
         value=f"<@{ctx.author.id}> бьёт {message[1]}")
+    emb.set_image(url=gif_url)
+    return emb
+
+
+async def rest(ctx):
+    random.shuffle(game_config.GIF_REST)
+    gif_url = random.choice(game_config.GIF_REST)
+    emb = discord.Embed()
+    emb.add_field(
+        name=f'Лежать!',
+        value=f"<@{ctx.raw_mentions[0]}> Лёг!")
     emb.set_image(url=gif_url)
     return emb
 
@@ -212,55 +235,67 @@ async def sex_accept(husband, wife):
     return emb
 
 
-async def sex_history(ctx):
-    db = sql_db(config.db_name)
-    history = db.get_marriage_accounts(f"marriage_{ctx.guild.name.strip().replace(' ', '_')}")
-    emb = discord.Embed(title=f"{ctx.guild.name} 🔞💦")
-    sex_count = {}
-    sex_history = {}
-    for member in history:
-        print(member)
-        if member['sex_count'] is not None:
-            sex_count[member['discord_id']] = member['sex_count']
-            sex_history[member['discord_id']] = member['sex_history'].split()
-    text = ''
-    for member, history in sex_history.items():
-        print(member, history)
-        partners = ''
-        for partner in sex_history[member]:
-            print(partner)
-            partners += f"\n<@{partner.split(':')[0]}> - {partner.split(':')[1]} раз"
-        text += f"\n\nУ <@{member}> секс был {sex_count[member]} раз.\nПартнёры: {partners}"
-        print(text)
-    emb.add_field(
-        name=f"~~Прошмандовки~~\n",
-        value=text)
-    return emb
+# async def sex_history(ctx, channel):
+#     db = sql_db(config.db_name)
+#     history = db.get_marriage_accounts(f"marriage_{ctx.guild.name.strip().replace(' ', '_')}")
+#     if history is not None:
+#         sex_count = {}
+#         sex_history = {}
+#         for member in history:
+#             print(member)
+#             if member['sex_count'] is not None and member['sex_history'] is not None:
+#                 sex_count[member['discord_id']] = member['sex_count']
+#                 sex_history[member['discord_id']] = member['sex_history'].split()
+#         text = ''
+#         for member, history in sex_history.items():
+#             print(member, history)
+#             partners = ''
+#             for partner in sex_history[member]:
+#                 print(partner)
+#                 partners += f"\n<@{partner.split(':')[0]}> - {partner.split(':')[1]} раз"
+#             print(text)
+#             emb = discord.Embed(description=f"<@{member}> ``-> {sex_count[member]}``\n", color=0xFA8072)
+#             emb.add_field(
+#                 name='Партнёры:',
+#                 value=f"{partners}")
+#             emb.set_footer(text=f"История сексов {ctx.guild.name}", icon_url=ctx.guild.icon_url)
+#             await channel.send(embed=emb)
+#             emb.clear_fields()
 
 
-async def marriage_history(ctx):
+async def marriage_history(ctx, channel):
     db = sql_db(config.db_name)
     history = db.get_marriage_accounts(f"marriage_{ctx.guild.name.strip().replace(' ', '_')}")
     date_now = datetime.date.today()
-    emb = discord.Embed()
     marriages = {}
     marriages_date = {}
+    marriages_history = {}
+    marriages_count = {}
     for member in history:
         if member['spouse'] is not None and member['spouse'] not in marriages.keys():
             marriages[member['discord_id']] = member['spouse']
-            print(member)
-            print(member["date_of_marriage"].split(':'))
             year, month, day = member["date_of_marriage"].split(':')
             marriage_date = datetime.date(int(year), int(month), int(day))
             marriage_days = date_now - marriage_date
             marriages_date[member['discord_id']] = marriage_days.days
-    text = ''
+        if member['marriage_count'] is not None and member['marriage_history'] is not None:
+            marriages_count[member['discord_id']] = member['marriage_count']
+            marriages_history[member['discord_id']] = member['marriage_history'].split()
     for i in marriages.keys():
-        text += f"\n<@{i}> в браке с <@{marriages[i]}> уже **{marriages_date[i]}** дней :cupid:\n"
-    emb.add_field(
-        name=f"\nЛюди, которые нашли друг друга\nна {ctx.guild.name} :revolving_hearts:\n",
-        value=text)
-    return emb
+        print(i)
+        emb = discord.Embed(
+            description=f"<@{i}> в браке с <@{marriages[i]}> уже **{marriages_date[i]}** дней :cupid:",
+            color=0xFA8072)
+        # if len(marriages_history[i]) > 1:
+        #     partners = ''
+        #     for partner in marriages_history[i]:
+        #         partners += f"<@{partner.split('_')[1]}> "
+        #     emb.add_field(
+        #         name='💔 Бывшие:',
+        #         value=f"{partners}")
+        emb.set_footer(text=f"Люди нашедшие друг друга на {ctx.guild.name}", icon_url=ctx.guild.icon_url)
+        await channel.send(embed=emb)
+        emb.clear_fields()
 
 
 async def anger(ctx):
@@ -275,8 +310,11 @@ async def anger(ctx):
 
 
 async def smoke(ctx):
-    random.shuffle(game_config.GIF_SMOKE)
-    gif_url = random.choice(game_config.GIF_SMOKE)
+    if ctx.author.id == 514780826085621771:
+        gif_url = random.choice(game_config.OLIVIA_SMOKE)
+    else:
+        random.shuffle(game_config.GIF_SMOKE)
+        gif_url = random.choice(game_config.GIF_SMOKE)
     emb = discord.Embed()
     if len(ctx.raw_mentions) > 0:
         paty = ''
@@ -294,6 +332,7 @@ async def smoke(ctx):
 
 
 async def hookah(ctx):
+    print("КАЛЬЯН")
     random.shuffle(game_config.GIF_HOOKAH)
     gif_url = random.choice(game_config.GIF_HOOKAH)
     emb = discord.Embed()
@@ -312,26 +351,48 @@ async def hookah(ctx):
     return emb
 
 
-async def drink(ctx):
-    random.shuffle(game_config.GIF_HOOKAH)
-    gif_url = random.choice(game_config.GIF_DRINK)
+async def dance(ctx):
+    random.shuffle(game_config.GIF_DANCE)
+    gif_url = random.choice(game_config.GIF_DANCE)
     emb = discord.Embed()
     if len(ctx.raw_mentions) > 0:
         paty = ''
         for i in ctx.raw_mentions:
             paty += f' <@{i}>'
         emb.add_field(
-            name=f'Бухать!',
-            value=f"<@{ctx.author.id}>{paty} бухают вместе")
+            name=f'Танцы',
+            value=f"<@{ctx.author.id}>{paty} танцуют вместе <a:4325_MeMeMe:593485738004316190><a:4325_MeMeMe:593485738004316190><a:4325_MeMeMe:593485738004316190>")
     else:
         emb.add_field(
-            name=f'Бухать!',
-            value=f"<@{ctx.author.id}> бухает")
+            name=f'Танцы',
+            value=f"<@{ctx.author.id}> танцует <a:4325_MeMeMe:593485738004316190>")
     emb.set_image(url=gif_url)
     return emb
 
 
-# В разработке
+async def drink(ctx):
+    if ctx.author.id == 514780826085621771:
+        gif_url = random.choice(game_config.OLIVIA_DRINK)
+    else:
+        random.shuffle(game_config.GIF_DRINK)
+        gif_url = random.choice(game_config.GIF_DRINK)
+    drink_emoji = random.choice(game_config.DRINK_EMOJI)
+    emb = discord.Embed()
+    if len(ctx.raw_mentions) > 0:
+        paty = ''
+        for i in ctx.raw_mentions:
+            paty += f' <@{i}>'
+        emb.add_field(
+            name=f'Бухать! <a:red_dance:593485736305623096>',
+            value=f"<@{ctx.author.id}>{paty} бухают вместе  {drink_emoji}")
+    else:
+        emb.add_field(
+            name=f'Бухать! <a:red_dance:593485736305623096>',
+            value=f"<@{ctx.author.id}> бухает {drink_emoji}")
+    emb.set_image(url=gif_url)
+    return emb
+
+
 async def marriage(ctx):
     emb = discord.Embed(title='``Новое предложение руки и сердца!`` :couple_with_heart:', color=0xF08080)
     emb.add_field(
@@ -365,6 +426,28 @@ async def marriage_fail(discord_id):
     emb.add_field(
         name=f'Есть одна проблемка',
         value=f"<@{discord_id}> уже в браке")
+    return emb
+
+
+async def divorce_complete(ctx, date):
+    date_now = datetime.date.today()
+    year, month, day = date.split(':')
+    marriage_date = datetime.date(int(year), int(month), int(day))
+    days = date_now - marriage_date
+    gif_url = random.choice(game_config.GIF_SAD)
+    emb = discord.Embed(color=0xF08080)
+    emb.add_field(
+        name=f'Разрыв брачных уз',
+        value=f"<@{ctx.author.id}> разрывает брак с <@{ctx.raw_mentions[0]}> длившийся {days.days} дней")
+    emb.set_image(url=gif_url)
+    return emb
+
+
+async def divorce_fail(ctx):
+    emb = discord.Embed(color=0xF08080)
+    emb.add_field(
+        name=f'Есть одна проблемка',
+        value=f"<@{ctx.raw_mentions[0]}> не в браке с <@{ctx.author.id}>")
     return emb
 
 
