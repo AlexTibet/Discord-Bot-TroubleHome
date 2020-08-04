@@ -94,3 +94,19 @@ async def sex_logic(ctx, bot):
             return await gen_embedded_reply.marriage_rejected(husband.id, wife.id)
     except asyncio.TimeoutError:
         return await gen_embedded_reply.marriage_rejected(husband.id, wife.id)
+
+
+async def divorce(ctx, bot):
+    db = sql_db(config.db_name)
+    history = db.get_marriage_account(f"marriage_{ctx.guild.name.strip().replace(' ', '_')}", ctx.author.id)
+    if history['spouse'] is None or history['spouse'] != ctx.raw_mentions[0]:
+        return await gen_embedded_reply.divorce_fail(ctx)
+    else:
+        date = history["date_of_marriage"]
+        db.divorce(ctx.guild.name.strip().replace(' ', '_'), ctx.author.id)
+        db.divorce(ctx.guild.name.strip().replace(' ', '_'), ctx.raw_mentions[0])
+        marriage_role = discord.utils.get(ctx.author.guild.roles, id=config.MARRIAGE_ROLE)
+        wife_member = ctx.author.guild.get_member(ctx.raw_mentions[0])
+        await ctx.author.remove_roles(marriage_role)
+        await wife_member.remove_roles(marriage_role)
+        return await gen_embedded_reply.divorce_complete(ctx, date)
