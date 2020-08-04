@@ -370,7 +370,7 @@ GIF_KISS = [
     'https://media1.tenor.com/images/f34f73decaef049f9354b27984dfb09c/tenor.gif',
     'https://media1.tenor.com/images/5654c7b35e067553e99bb996535c0a75/tenor.gif',
     'https://media1.tenor.com/images/cde82deb56bbb78eabf6317011bb922d/tenor.gif',
-
+    'https://media1.tenor.com/images/11b86f035dcd63ba225d440884d294a6/tenor.gif'
 ]
 
 # Секс
@@ -407,7 +407,10 @@ GIF_SEX = [
     'https://media1.tenor.com/images/5135d883528961c14785d1ea89840475/tenor.gif',
     'https://media1.tenor.com/images/b862bb3ab3e2a8f0fb10f9c78f4056be/tenor.gif',
     'https://media1.tenor.com/images/9577a3ef661c69a1152a688a54c6614a/tenor.gif',
-    'https://media1.tenor.com/images/f3bc79730cf5912c51634dd9620b3f36/tenor.gif'
+    'https://media1.tenor.com/images/f3bc79730cf5912c51634dd9620b3f36/tenor.gif',
+    'https://media1.tenor.com/images/1cc8c5b07fa19f455c0fc72bcdf047ac/tenor.gif',
+    'https://media1.tenor.com/images/5f9f4db951de63e5502c69298e120b0d/tenor.gif',
+    'https://media1.tenor.com/images/c03d1e536b8f414c09ad0192200c7a46/tenor.gif'
 ]
 
 # злость
@@ -554,7 +557,37 @@ GIF_SLAP = [
     'https://media1.tenor.com/images/cb5bca38d49474c1786e5a21e1bb51e8/tenor.gif',
     'https://media1.tenor.com/images/dfd1af7dc2c412eabb07da44af4fad0a/tenor.gif',
     'https://media1.tenor.com/images/0df362c39390c9ffefe59e1eb5b8f9af/tenor.gif',
-    'https://media1.tenor.com/images/5634deaafe82fdc1836912ce275b0183/tenor.gif'
+    'https://media1.tenor.com/images/5634deaafe82fdc1836912ce275b0183/tenor.gif',
+    'https://media1.tenor.com/images/493371b1b602092f2feb964cef5c6a9f/tenor.gif',
+    'https://media1.tenor.com/images/ccd4dc74dddf654210dd703276f87c3f/tenor.gif',
+    'https://media1.tenor.com/images/62dbdccb33d4ac33ebc0b3c60a029ee5/tenor.gif'
+]
+# танцевать
+GIF_DANCE = [
+    'https://media1.tenor.com/images/de63067cb32a34143de71735c4451aee/tenor.gif',
+    'https://media.tenor.com/images/58ed44d14a383a002784f498128401f5/tenor.gif',
+    'https://media1.tenor.com/images/b3add2fcf315e7062f31533c35f62b96/tenor.gif',
+    'https://media1.tenor.com/images/16993e6017ac8c1857c0ad4e6e0d56ce/tenor.gif',
+    'https://media1.tenor.com/images/c91f10d1c431c54464e99b773bfe7c06/tenor.gif',
+    'https://media1.tenor.com/images/b4367090e743ab53b06a8b59520ff80a/tenor.gif',
+    'https://media1.tenor.com/images/6a178d5ccbebbd44786ef5a6d59825b9/tenor.gif',
+    'https://media1.tenor.com/images/ad335620aba9551ba476d30791a89ebb/tenor.gif',
+    'https://media1.tenor.com/images/3dbd809f04a0442ff760a9fc49e5a942/tenor.gif',
+    'https://media1.tenor.com/images/1ff6de099dbe187b44113cb7eb671020/tenor.gif',
+    'https://media1.tenor.com/images/f17d4422ebe8ab631c8181289bbba31f/tenor.gif',
+    'https://media1.tenor.com/images/95a80991d1e1fc870d8725f5047dbda0/tenor.gif',
+    'https://media1.tenor.com/images/89e9b7d0cbd8e8957d30d16bee1dea18/tenor.gif',
+    'https://media1.tenor.com/images/2bcff39be2d892e0faf78f18b62ebdd3/tenor.gif',
+    'https://media1.tenor.com/images/76bba36d63647c9db1c59ab1393c5967/tenor.gif',
+    'https://media1.tenor.com/images/9a4d60fc3b438877a2dc36da0d066780/tenor.gif',
+    'https://media1.tenor.com/images/170c2bdbe09a1d0a8133364b33671d33/tenor.gif',
+    'https://media1.tenor.com/images/91f3210e74bac3cbd2d3b79c0fb71422/tenor.gif',
+    'https://media1.tenor.com/images/44b231b2f7b592dfb8d5f30c57060958/tenor.gif',
+    'https://media1.tenor.com/images/a1705a7e2e6ad09f8c6f801b0af080a8/tenor.gif',
+    'https://media1.tenor.com/images/58f23c62733b75711785a822cdb052c6/tenor.gif',
+    'https://media1.tenor.com/images/6b13d4b7847d61ddcbd1be31d3febe00/tenor.gif',
+    'https://media1.tenor.com/images/a30eb81b81cbb3d7901d482422652068/tenor.gif',
+    'https://media1.tenor.com/images/6126e24fe3f3fd113567d3e47a197745/tenor.gif'
 ]
 
 # тыкнуть
@@ -706,7 +739,7 @@ GIF_SMOKE = [
     'https://media1.tenor.com/images/b0eebc667e1c47331f8213f67cb7e7f5/tenor.gif'
 
 ]
-
+# кальян
 GIF_HOOKAH = [
     'https://media1.tenor.com/images/3cc07a85449b164917d2be3e4407a356/tenor.gif',
     'https://media1.tenor.com/images/c4d0a1fa4c1fb2002ec4efaed97ccdca/tenor.gif',
@@ -717,7 +750,15 @@ GIF_HOOKAH = [
     'https://media1.tenor.com/images/b70d739a6240f205d9d4a849926f7624/tenor.gif',
     'https://media1.tenor.com/images/5ca72f0aac3bdf1e26432d029a671c25/tenor.gif',
     'https://media1.tenor.com/images/4c71d09463b6da8f774405b664a57bf6/tenor.gif',
-    'https://media1.tenor.com/images/788ac9e6547b7ee83e212b99fb7dd9b4/tenor.gif'
+    'https://media1.tenor.com/images/788ac9e6547b7ee83e212b99fb7dd9b4/tenor.gif',
+    'https://media1.tenor.com/images/a5739f555ebdeacf3b09a6b4c1025ea9/tenor.gif',
+    'https://media1.tenor.com/images/a584b54e9ef9fb5ff6bf99ad1d4335f9/tenor.gif',
+    'https://media1.tenor.com/images/567d91ef5130b3d1a43035a503461dc1/tenor.gif',
+    'https://media1.tenor.com/images/362eb51f6e88d2c535e72004461adfa1/tenor.gif',
+    'https://media1.tenor.com/images/5ca72f0aac3bdf1e26432d029a671c25/tenor.gif',
+    'https://media1.tenor.com/images/5fddfefb92d2e29e84ed02be20ad01fe/tenor.gif',
+    'https://media1.tenor.com/images/a9210a94d07a44e7e5258a0895a9d255/tenor.gif',
+
 ]
 # свадьба
 GIF_MARRIAGE = [
@@ -741,7 +782,12 @@ GIF_MARRIAGE = [
     'https://media.tenor.com/images/7d11baf04cd74c9b9f4d43bb63b283d6/tenor.gif',
     'https://media.tenor.com/images/b6552f1f2e4a2e5361f9f233ea6c8743/tenor.gif',
     'https://media.tenor.com/images/df2054d5a843d7c4302cbb69eabea515/tenor.gif',
-    'https://media.tenor.com/images/1cfec8fc198056c62254c97a6233468c/tenor.gif'
+    'https://media.tenor.com/images/1cfec8fc198056c62254c97a6233468c/tenor.gif',
+    'https://media1.tenor.com/images/dfda04d45f1d75646ce10b4edcfdecef/tenor.gif',
+    'https://media1.tenor.com/images/c045b9467a567f3b2d49b4ddc0ca05ce/tenor.gif',
+    'https://media1.tenor.com/images/e09d73324fce8cf98d91c2acedef630c/tenor.gif',
+    'https://media1.tenor.com/images/e895795370ca583c5c3b2bbe0853aae3/tenor.gif',
+    'https://media1.tenor.com/images/79c71a1abc661ca511bf74099d4b722e/tenor.gif'
 ]
 
 GIF_DRINK = [
@@ -763,5 +809,67 @@ GIF_DRINK = [
     'https://media1.tenor.com/images/2df4bdfe825a65c5905cf745f1f66de4/tenor.gif',
     'https://media1.tenor.com/images/867d5766878e1a2eaf5a777299047c58/tenor.gif',
     'https://media1.tenor.com/images/c3861f5ed99f34d36a41e40f05d9cdca/tenor.gif',
-    'https://media1.tenor.com/images/487ba55465e8cf5ff78ea5bf8cf06e4a/tenor.gif'
+    'https://media1.tenor.com/images/487ba55465e8cf5ff78ea5bf8cf06e4a/tenor.gif',
+    'https://media1.tenor.com/images/efecb7be9018b9cd11a5866c548a42ca/tenor.gif',
+    'https://media1.tenor.com/images/c030155a91fce60f78e7e8d042f6d377/tenor.gif'
+]
+
+DRINK_EMOJI = ['🥛', '🍷', '🍸', '🍹', '🍺', '🍻', '🥂', '🥃', '🧉']
+
+BOB_DINO_EMOJI = {
+    '<:Velociraptor:701932185271402569>': 'https://cdn.discordapp.com/emojis/701932185271402569.png?v=1',
+    '<:Saichania:701932142942224485>': 'https://cdn.discordapp.com/emojis/701932142942224485.png?v=1',
+    '<:Rex:701932163087597689>': 'https://cdn.discordapp.com/emojis/701932163087597689.png?v=1',
+    '<:Pteranodon:701932231370866739>': 'https://cdn.discordapp.com/emojis/701932231370866739.png?v=1',
+    '<:Parasaur:701932208385949766>': 'https://cdn.discordapp.com/emojis/701932208385949766.png?v=1',
+    '<:Pachycephalosaurus:701932126899011704>': 'https://cdn.discordapp.com/emojis/701932126899011704.png?v=1',
+    # '<:Oryctodromeus:736713145753534514>': 'https://cdn.discordapp.com/emojis/736713145753534514.png?v=1',
+    '<:Mosasaurus:701932105348677713>': 'https://cdn.discordapp.com/emojis/701932105348677713.png?v=1',
+    '<:Megalosaurus:701932074327867442>': 'https://cdn.discordapp.com/emojis/701932074327867442.png?v=1',
+    '<:Lurdusaurus:701932049161912400>': 'https://cdn.discordapp.com/emojis/701932049161912400.png?v=1',
+    '<:Kronosaurus:701932023408754778>': 'https://cdn.discordapp.com/emojis/701932023408754778.png?v=1',
+    '<:Ichthyovenator:701931996611477544>': 'https://cdn.discordapp.com/emojis/701931996611477544.png?v=1',
+    '<:Elasmosaurus:701931971101851749>': 'https://cdn.discordapp.com/emojis/701931971101851749.png?v=1',
+    '<:Apatosaurus:701931926512205904>': 'https://cdn.discordapp.com/emojis/701931926512205904.png?v=1',
+    '<:Acrocanthosaurus:701931941980536842>': 'https://cdn.discordapp.com/emojis/701931941980536842.png?v=1',
+}
+
+OLIVIA_SMOKE = [
+    'https://media1.tenor.com/images/0687bc266355be5172a0ad5c503c1242/tenor.gif',
+    'https://media1.tenor.com/images/e8e35b066100a0270cf99320f4fb7fc3/tenor.gif',
+    'https://media1.tenor.com/images/e67f8b1f4167cccb46de2a9c4204634a/tenor.gif',
+    'https://media1.tenor.com/images/3d0b68dae30952626d80dd38ec91f71f/tenor.gif',
+    'https://media1.tenor.com/images/b4f6ab0a67c71d2cdda788d0c1e2d474/tenor.gif',
+    'https://media1.tenor.com/images/339ee40c3ee3e7342eb03826b52302d1/tenor.gif',
+    'https://media1.tenor.com/images/e2fc23ee67a3dc2e70ce2ac1dce02ae4/tenor.gif',
+    'https://media1.tenor.com/images/a47c71b0aa8baa6afb515fe50fc2ab0c/tenor.gif',
+    'https://media1.tenor.com/images/e67f8b1f4167cccb46de2a9c4204634a/tenor.gif'
+]
+
+OLIVIA_DRINK = [
+    'https://media1.tenor.com/images/c030155a91fce60f78e7e8d042f6d377/tenor.gif',
+    'https://media1.tenor.com/images/dcbe0779460b74c21a8fdba850fe2816/tenor.gif',
+    'https://media1.tenor.com/images/8da2c2cc11c40f3f262de2afea341f23/tenor.gif',
+    'https://media1.tenor.com/images/a47c71b0aa8baa6afb515fe50fc2ab0c/tenor.gif'
+]
+GIF_REST = [
+    'https://cdn.discordapp.com/attachments/581134474092347392/738742366822727680/8ad97846cb03.gif',
+    'https://cdn.discordapp.com/attachments/581134474092347392/738742370627223552/28e27f1c01c66655b3575108b3dff7b0.gif',
+    'https://cdn.discordapp.com/attachments/581134474092347392/738742372753473576/771918052_zps104b8410.gif',
+    'https://cdn.discordapp.com/attachments/581134474092347392/738742379279941712/Awesome-MMA-Knockout-GIF.gif',
+    'https://cdn.discordapp.com/attachments/581134474092347392/738742380693422150/1562512277186846446.gif',
+    'https://cdn.discordapp.com/attachments/581134474092347392/738742381909770291/GIF-UFG.gif',
+    'https://cdn.discordapp.com/attachments/581134474092347392/738742702488813598/1.gif',
+    'https://cdn.discordapp.com/attachments/581134474092347392/738742713981337640/38D6847D-054D-493C-8B34-D37218AE2D47.gif',
+    'https://cdn.discordapp.com/attachments/581134474092347392/738742758956597248/212.gif',
+    'https://cdn.discordapp.com/attachments/581134474092347392/738742769828364318/1405f-3.gif',
+    'https://cdn.discordapp.com/attachments/581134474092347392/738742783564578847/AcidicDefenselessArmednylonshrimp-size_restricted.gif',
+    'https://cdn.discordapp.com/attachments/581134474092347392/738742793169797150/giphy_1.gif',
+    'https://cdn.discordapp.com/attachments/581134474092347392/738742796986613760/giphy_2.gif',
+    'https://cdn.discordapp.com/attachments/581134474092347392/738742809863127071/giphy_3.gif',
+    'https://cdn.discordapp.com/attachments/581134474092347392/738742815672238180/giphy_4.gif',
+    'https://cdn.discordapp.com/attachments/581134474092347392/738742823464992798/giphy_5.gif',
+    'https://cdn.discordapp.com/attachments/581134474092347392/738742834525503538/giphy.gif',
+    'https://cdn.discordapp.com/attachments/581134474092347392/738742852800086067/QB1Kg9K.gif',
+    'https://cdn.discordapp.com/attachments/581134474092347392/738742859200462878/RmHG.gif'
 ]
