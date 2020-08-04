@@ -146,6 +146,17 @@ class SqliteDataStorage(DataStorage, ABC):
         self._connection.commit()
         return True
 
+    def divorce(self, table: str, discord_id: int) -> True or None:
+        self._cursor.execute(
+            """
+            UPDATE {}
+            SET spouse = {}, date_of_marriage = {}
+            WHERE Dis_ID={}
+            """.format(f'marriage_{table}', 'NULL', 'NULL', discord_id)
+        )
+        self._connection.commit()
+        return True
+
     # @bot_logging
     def set_marriage_account(self, table, discord_id: int, spouse: int) -> True or None:
         date = datetime.date.today()
