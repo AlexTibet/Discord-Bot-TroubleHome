@@ -1,15 +1,16 @@
 import asyncio
 import discord
-import re
 import datetime
-import config
+import re
+import websockets
+
 from datastorage import SqliteDataStorage
-import gen_embedded_reply
 import message_handlers
+import gen_embedded_reply
 import gen_emb_for_theisle
 import server_info
-import websockets
 import server_config_editor
+import config
 
 
 class MyClient(discord.Client):
@@ -48,6 +49,7 @@ class MyClient(discord.Client):
                         sql_db.create_account(table, member.id)
                         print(f"{member} добавлен в базу данных (Таблица: {table} с ID:{member.id}")
                 continue
+            print("Run online activity check")
             await self.starting_online_check()
 
     async def on_message(self, ctx):
@@ -109,7 +111,7 @@ class MyClient(discord.Client):
         if channel.id == config.SERVER_CONFIG_CHANNEL:
             try:
                 if re.search(r"^[Аа]дминка\b", message[0]) and re.search(r"^[\d]{17}\b", message[1].split("/")[0].split("<")[0]):
-                    if role_access(ctx, [config.TECHNIC_ROLE, config.OWNER_ROLE]):
+                    if await role_access(ctx, [config.TECHNIC_ROLE, config.OWNER_ROLE]):
                         try:
                             server_config = await server_config_editor.editing_preparation()
                             response = await server_config_editor.add_server_admin(message[1], server_config)
@@ -138,20 +140,39 @@ class MyClient(discord.Client):
 
     async def starting_online_check(self):
         while True:
-            online = await server_info.bermuda_server_info()
-            await client.online_activity(online)
-            print(f"{self} установил статус, ожидание")
-            await asyncio.sleep(30)
+            try:
+                online = await server_info.bermuda_server_info()
+                await client.online_activity(online)
+                print(f"{self} установил статус, ожидание")
+                await asyncio.sleep(30)
+            except Exception as  error:
+                print(error)
+                await asyncio.sleep(30)
+                continue
 
     async def online_activity(self, info):
-        online = f"{info['players']['active']} из {info['players']['total']}"
+        try:
+            online = f"{info['players']['active']} из {info['players']['total']}"
+        except TypeError:
+            online = "Оффлайн"
         game = discord.Game(online)
         try:
             await client.change_presence(status=discord.Status.online, activity=game)
         except websockets.exceptions.ConnectionClosedOK:
             game = discord.Game("Обновляю информацию")
             await client.change_presence(status=discord.Status.online, activity=game)
-        print(self.activity)
+
+    async def on_raw_message_delete(self, payload):
+        if payload.channel_id in config.ADMIN_CHANNEL:
+            channel = discord.Client.get_channel(self, payload.channel_id)
+            await channel.send(f"`А х*й ты чё тут удалишь!`\nЭто <#{payload.channel_id}>!!!\n"
+                               f"{payload.cached_message.author} отправлял сообщение:\n"
+                               f"{payload.cached_message.content}")
+            for emb in payload.cached_message.embeds:
+                await channel.send(embed=emb)
+            for attach in payload.cached_message.attachments:
+                await channel.send(attach.url)
+                await channel.send(attach.proxy_url)
 
 
 async def role_access(ctx, access_list) -> bool:
