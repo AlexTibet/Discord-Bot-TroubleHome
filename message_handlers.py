@@ -62,20 +62,22 @@ async def game_message(ctx, channel, bot):
         elif re.search(r"^[Зз]лость\b", message[0]):
             await channel.send(embed=await gen_embedded_reply.anger(ctx))
 
-        if re.search(r"^[Кк]урить\b", message[0]):
+        elif re.search(r"^[Кк]урить\b", message[0]):
             await channel.send(embed=await gen_embedded_reply.smoke(ctx))
 
-        if re.search(r"^[Бб]ухать\b", message[0]) or re.search(r"^[Пп]ить\b", message[0]):
+        elif re.search(r"^[Бб]ухать\b", message[0]) or re.search(r"^[Пп]ить\b", message[0]):
             await channel.send(embed=await gen_embedded_reply.drink(ctx))
 
-        if re.search(r"^[Кк]альян\b", message[0]):
+        elif re.search(r"^[Кк]альян\b", message[0]):
             await channel.send(embed=await gen_embedded_reply.hookah(ctx))
 
-        if re.search(r"^[Тт]анцевать\b", message[0]):
+        elif re.search(r"^[Тт]анцевать\b", message[0]):
             await channel.send(embed=await gen_embedded_reply.dance(ctx))
 
         elif re.search(r"^[Бб]рак\b", message[0]) and (re.search(r"[\d]{18}", message[1]) or re.search(r"[\d]{18}", message[2])):
-            if await game_logic.marriage_check_husband(ctx):
+            if await game_logic.marriage_check_self(ctx):
+                await channel.send(embed=await gen_embedded_reply.marriage_self(ctx))
+            elif await game_logic.marriage_check_husband(ctx):
                 await channel.send(embed=await gen_embedded_reply.marriage_fail(ctx.author.id))
             elif await game_logic.marriage_check_wife(ctx, bot):
                 await channel.send(embed=await gen_embedded_reply.marriage_fail(ctx.raw_mentions[0]))
@@ -103,11 +105,15 @@ async def game_message(ctx, channel, bot):
                 await channel.send(embed=await gen_embedded_reply.marriage_history(ctx, channel))
             except discord.errors.HTTPException:
                 pass
-        # elif re.search(r"^[Ии]стория\b", message[0]) and re.search(r"сексов\b", message[1]):
-        #     await gen_embedded_reply.sex_history(ctx, channel)
+        elif re.search(r"^[Ии]стория\b", message[0]) and re.search(r"сексов\b", message[1]):
+            if len(ctx.raw_mentions) == 1:
+                await gen_embedded_reply.sex_history(ctx, channel, whore=ctx.raw_mentions[0])
+            else:
+                await gen_embedded_reply.sex_history(ctx, channel)
 
         elif re.search(r"^[Нн]а\b", message[0]) and re.search(r"ком", message[1]) and re.search(
                 r"поиграть", message[2]):
             await channel.send(embed=await gen_embedded_reply.who_should_i_play(ctx))
+
     except IndexError:
         pass  # просто сообщение, не команда
