@@ -4,31 +4,26 @@ import requests
 import datetime
 
 import game_config
-import finde_and_download
-import dino_list
-import server_info
 import game_logic
 from datastorage import SqliteDataStorage as sql_db
 import config
+import server_info
 
 
-async def database_check(message: list) -> discord.embeds:
-    """Проверяем наличия файла с данными об игроке на удалённом сервере"""
-    try:
-        int(message[2])
-    except Exception as Error:
-        print(Error)
-        emb = discord.Embed(title=f'Ошибка ввода данных', color=0xFF0000)
-        return emb
-    emb = discord.Embed(title=f'🔍', color=0x20B2AA)
-    emb.set_author(name=f"Запрос информации о {message[2]}")
-    emb.set_footer(text='Проверяю базу данных 📚')
-    return emb
-
-
-async def player_not_found() -> discord.embeds:
-    emb = discord.Embed(title=f'❌ Нет данных ❌', color=0xFF0000)
-    emb.set_footer(text='Игрок не найден в базе данных')
+async def online_info():
+    info = await server_info.bermuda_server_info()
+    if info is not None:
+        emb = discord.Embed(title=f"Игроков {info['players']['active']} из {info['players']['total']}",
+                            color=0xf6ff00)
+        emb.set_author(name="Онлайн" if info['is_online'] is True else "Оффлайн")
+        emb.add_field(
+            name='Название:',
+            value=info['name'])
+        emb.add_field(
+            name='Карта:',
+            value=info['map'])
+    else:
+        emb = discord.Embed(title=f'❌ Нет данных ❌', color=0xFF0000)
     return emb
 
 
@@ -53,11 +48,12 @@ async def bite(ctx, message: str) -> discord.embeds:
 
 async def who_am_i(ctx) -> discord.embeds:
     """Игра 'Кто я?', случайно выбирается результат ответ"""
-    random.shuffle(game_config.WHOAMI)
+    responses = game_config.WHOAMI
+    random.shuffle(responses)
     emb = discord.Embed()
     emb.add_field(
         name='Кто ты?!',
-        value=f"<@{ctx.author.id}> ты {random.choice(game_config.WHOAMI)}!")
+        value=f"<@{ctx.author.id}> ты {random.choice(responses)}!")
     return emb
 
 
@@ -76,7 +72,9 @@ async def who_should_i_play(ctx) -> discord.embeds:
 async def shipper(message: str) -> discord.embeds:
     """Игра 'Шипперинг', случайно выбирается результат и gif"""
     heart = random.choice(game_config.SHIPPER_HEART)
-    gif_url = random.choice(game_config.GIF_SHIPPER)
+    gif_list = game_config.GIF_SHIPPER
+    random.shuffle(gif_list)
+    gif_url = random.choice(gif_list)
     victim_one, victim_two, compatibility, title = await game_logic.shipper_logic(message)
     emb = discord.Embed(color=0xF08080)
     emb.add_field(
@@ -87,8 +85,9 @@ async def shipper(message: str) -> discord.embeds:
 
 
 async def hug(ctx, message):
-    random.shuffle(game_config.GIF_HUG)
-    gif_url = random.choice(game_config.GIF_HUG)
+    gif_list = game_config.GIF_HUG
+    random.shuffle(gif_list)
+    gif_url = random.choice(gif_list)
     emb = discord.Embed()
     emb.add_field(
         name=f'Обнимашки',
@@ -98,18 +97,20 @@ async def hug(ctx, message):
 
 
 async def feed(ctx):
-    random.shuffle(game_config.GIF_FEED)
-    gif_url = random.choice(game_config.GIF_FEED)
+    gif_list = game_config.GIF_FEED
+    random.shuffle(gif_list)
+    gif_url = random.choice(gif_list)
     emb = discord.Embed()
     emb.add_field(
         name=f'Ням ням',
-        value=f"<@{ctx.author.id}> кормит {ctx.raw_mentions[0]}")
+        value=f"<@{ctx.author.id}> кормит <@{ctx.raw_mentions[0]}>")
     emb.set_image(url=gif_url)
     return emb
 
 
 async def kiss(ctx, message):
-    random.shuffle(game_config.GIF_KISS)
+    gif_list = game_config.GIF_KISS
+    random.shuffle(gif_list)
     gif_url = random.choice(game_config.GIF_KISS)
     emb = discord.Embed()
     emb.add_field(
@@ -228,39 +229,68 @@ async def sex(ctx):
 async def sex_accept(husband, wife):
     gif_url = random.choice(game_config.GIF_SEX)
     emb = discord.Embed()
+    description = f"<@{husband}> занимается сексом с <@{wife}>" if husband != wife else f"<@{husband}> дрочит."
     emb.add_field(
         name=f'Секс',
-        value=f"<@{husband}> занимается сексом с <@{wife}>")
+        value=description)
     emb.set_image(url=gif_url)
     return emb
 
 
-# async def sex_history(ctx, channel):
-#     db = sql_db(config.db_name)
-#     history = db.get_marriage_accounts(f"marriage_{ctx.guild.name.strip().replace(' ', '_')}")
-#     if history is not None:
-#         sex_count = {}
-#         sex_history = {}
-#         for member in history:
-#             print(member)
-#             if member['sex_count'] is not None and member['sex_history'] is not None:
-#                 sex_count[member['discord_id']] = member['sex_count']
-#                 sex_history[member['discord_id']] = member['sex_history'].split()
-#         text = ''
-#         for member, history in sex_history.items():
-#             print(member, history)
-#             partners = ''
-#             for partner in sex_history[member]:
-#                 print(partner)
-#                 partners += f"\n<@{partner.split(':')[0]}> - {partner.split(':')[1]} раз"
-#             print(text)
-#             emb = discord.Embed(description=f"<@{member}> ``-> {sex_count[member]}``\n", color=0xFA8072)
-#             emb.add_field(
-#                 name='Партнёры:',
-#                 value=f"{partners}")
-#             emb.set_footer(text=f"История сексов {ctx.guild.name}", icon_url=ctx.guild.icon_url)
-#             await channel.send(embed=emb)
-#             emb.clear_fields()
+async def sex_history(ctx, channel, whore=None):
+    db = sql_db(config.db_name)
+    if whore is None:
+        if channel.id in [726050381481902080, 718840575238864956]:
+            history = db.get_marriage_accounts(f"marriage_{ctx.guild.name.strip().replace(' ', '_')}")
+            if history is not None:
+                sex_count = {}
+                sex_historyes = {}
+                for member in history:
+                    if member['sex_count'] is not None and member['sex_history'] is not None:
+                        sex_count[member['discord_id']] = member['sex_count']
+                        sex_historyes[member['discord_id']] = member['sex_history'].split()
+                text = ''
+                count = 0
+                for member, history in sex_historyes.items():
+                    count += 1
+                    partners = ''
+                    for partner in sex_historyes[member]:
+                        name = f"<@{partner.split(':')[0]}>" if int(partner.split(':')[0]) != int(member) else "``Дрочит``"
+                        partners += f"\n\t\t{name} - {' '.join(game_logic.ending_check(partner.split(':')[1]))}"
+                    text += f"\n\n💞 <@{member}> ``-> {sex_count[member]}``\nПартнёры:{partners}"
+
+                    if count == 5:
+                        emb = discord.Embed(description=text, color=0xFA8072)
+                        emb.set_footer(text=f"История сексов {ctx.guild.name}", icon_url=ctx.guild.icon_url)
+                        await channel.send(embed=emb)
+                        emb.clear_fields()
+                        text = ''
+                        count = 0
+                if len(text) > 1:
+                    emb = discord.Embed(description=text, color=0xFA8072)
+                    emb.set_footer(text=f"История сексов {ctx.guild.name}", icon_url=ctx.guild.icon_url)
+                    await channel.send(embed=emb)
+                    emb.clear_fields()
+    else:
+        history = db.get_marriage_account(f"marriage_{ctx.guild.name.strip().replace(' ', '_')}", int(whore))
+        if history is None:
+            await channel.send("Ничего не найдено")
+        else:
+            partners = ''
+            if history['sex_count'] is not None and history['sex_history'] is not None:
+                sex_count = history['sex_count']
+                sex_historyes = history['sex_history'].split()
+                for partner in sex_historyes:
+                    name = f"<@{partner.split(':')[0]}>" if int(partner.split(':')[0]) != int(whore) else "``Дрочит``"
+                    partners += f"\n{name} - {' '.join(game_logic.ending_check(partner.split(':')[1]))}"
+                emb = discord.Embed(description=f"💞 <@{whore}> ``-> {sex_count}``\n", color=0xFA8072)
+                emb.add_field(
+                    name='Партнёры:',
+                    value=f"{partners}")
+                emb.set_footer(text=f"История сексов {ctx.guild.name}", icon_url=ctx.guild.icon_url)
+                await channel.send(embed=emb)
+            else:
+                await channel.send("*Ничего не найдено*")
 
 
 async def marriage_history(ctx, channel):
@@ -281,11 +311,18 @@ async def marriage_history(ctx, channel):
         if member['marriage_count'] is not None and member['marriage_history'] is not None:
             marriages_count[member['discord_id']] = member['marriage_count']
             marriages_history[member['discord_id']] = member['marriage_history'].split()
+    text = ''
+    count = 0
     for i in marriages.keys():
-        print(i)
-        emb = discord.Embed(
-            description=f"<@{i}> в браке с <@{marriages[i]}> уже **{marriages_date[i]}** дней :cupid:",
-            color=0xFA8072)
+        if int(i) == int(marriages[i]):
+            continue
+        else:
+            text += f"<@{i}> и <@{marriages[i]}> вместе уже **{marriages_date[i]}** дней :cupid:\n\n"
+            count += 1
+        if count == 10:
+            emb = discord.Embed(
+                description=text,
+                color=0xFA8072)
         # if len(marriages_history[i]) > 1:
         #     partners = ''
         #     for partner in marriages_history[i]:
@@ -293,14 +330,24 @@ async def marriage_history(ctx, channel):
         #     emb.add_field(
         #         name='💔 Бывшие:',
         #         value=f"{partners}")
+            emb.set_footer(text=f"Люди нашедшие друг друга на {ctx.guild.name}", icon_url=ctx.guild.icon_url)
+            await channel.send(embed=emb)
+            emb.clear_fields()
+            text = ''
+            count = 0
+    if len(text) > 1:
+        emb = discord.Embed(
+            description=text,
+            color=0xFA8072)
         emb.set_footer(text=f"Люди нашедшие друг друга на {ctx.guild.name}", icon_url=ctx.guild.icon_url)
         await channel.send(embed=emb)
         emb.clear_fields()
 
 
 async def anger(ctx):
-    random.shuffle(game_config.GIF_ANGER)
-    gif_url = random.choice(game_config.GIF_ANGER)
+    gif_list = game_config.GIF_ANGER
+    random.shuffle(gif_list)
+    gif_url = random.choice(gif_list)
     emb = discord.Embed()
     emb.add_field(
         name=f'Злость',
@@ -429,6 +476,14 @@ async def marriage_fail(discord_id):
     return emb
 
 
+async def marriage_self(ctx):
+    emb = discord.Embed(color=0xF08080)
+    emb.add_field(
+        name=f'Есть одна проблемка',
+        value=f"<@{ctx.author.id}> сочувствую твоему одиночеству, но тебе нужен кто-то другой.")
+    return emb
+
+
 async def divorce_complete(ctx, date):
     date_now = datetime.date.today()
     year, month, day = date.split(':')
@@ -451,116 +506,6 @@ async def divorce_fail(ctx):
     return emb
 
 
-async def dino_info(ctx, message: str) -> discord.embeds:
-    """Вытаскиваем данные о дино игрока"""
-    steam_id = int(message[2])
-    filename = await finde_and_download.download_log(steam_id)
-    data = await finde_and_download.data_info(filename)
-
-    if data is False:
-        return await player_not_found()
-    else:
-        emb = discord.Embed(title=data['CharacterClass'],
-                            color=0x20B2AA)
-        emb.set_author(name=f"Информация о динозавре {steam_id}")
-        emb.add_field(
-            name='Рост:',
-            value=data['Growth'])
-        emb.add_field(
-            name='Здоровье:',
-            value=data['Health'])
-        emb.add_field(
-            name='Еда:',
-            value=data['Hunger'])
-        emb.add_field(
-            name='Вода:',
-            value=data['Thirst'])
-        emb.add_field(
-            name='Выносливость:',
-            value=data['Stamina'])
-        emb.add_field(
-            name='Кровь:',
-            value=data['BleedingRate'])
-        emb.add_field(
-            name='Пол:',
-            value="Женский" if data['bGender'] else "Мужской")
-        emb.add_field(
-            name='Нога:',
-            value="Сломана" if data['bBrokenLegs'] else "Не сломана")
-        emb.add_field(
-            name='Кислород:',
-            value=data['Oxygen'])
-        emb.set_footer(text=f'{ctx.author} запросил информацию о дино игрока {steam_id}',
-                       icon_url=ctx.author.avatar_url
-                       )
-        return emb
-
-
-async def give_dino(message: list, channel: discord.object) -> discord.embeds:
-    """Прописывает необходимого дино игроку"""
-    steam_id, dino = int(message[2]), message[3]
-    status = None
-    for catalog in dino_list.DINO_LIST:
-        if dino in catalog:
-            emb = discord.Embed(title=f'🔍', color=0x20B2AA)
-            emb.set_footer(text='Проверяю базу данных 📚')
-            await channel.send(embed=emb)
-            emb.clear_fields()
-            filename = await finde_and_download.data_modification(steam_id, dino)
-            if filename is False:
-                return await player_not_found()
-            if await finde_and_download.upload_log(filename, steam_id):
-                emb = discord.Embed(title=f'✅ Готово', color=0x20B2AA)
-                emb.set_footer(text='Дино прописан, и загружен на сервер')
-                return emb
-            else:
-                emb = discord.Embed(title=f'⛔ Не получилось загрузить файл на сервер ⛔', color=0xFF0000)
-                return emb
-    if status is None:
-        emb = discord.Embed(title=f'❌ Ошибка ❌', color=0xFF0000)
-        emb.set_footer(text='Такого дино нет')
-        return emb
-
-
-async def dino_catalog(channel: discord.object) -> None:
-    """Выводит список дино доступных в игре"""
-    emb = discord.Embed(title=f'Прогрессия.', color=0x20B2AA)
-    emb.add_field(
-        name='Травоядные:',
-        value="\n".join(dino_list.OLD_HERBIVORES))
-    emb.add_field(
-        name='Хищники:',
-        value="\n".join(dino_list.OLD_CARNIVORES))
-    await channel.send(embed=emb)
-    emb.clear_fields()
-
-    emb = discord.Embed(title=f'Сурвайвл.', color=0x20B2AA)
-    emb.add_field(
-        name='Травоядные:',
-        value="\n".join(dino_list.HERBIVORES))
-    emb.add_field(
-        name='Хищники:',
-        value="\n".join(dino_list.CARNIVORES))
-    await channel.send(embed=emb)
-
-
-async def online_info():
-    info = await server_info.bermuda_server_info()
-    if info is not None:
-        emb = discord.Embed(title=f"Игроков {info['players']['active']} из {info['players']['total']}",
-                            color=0xf6ff00)
-        emb.set_author(name="Онлайн" if info['is_online'] is True else "Оффлайн")
-        emb.add_field(
-            name='Название:',
-            value=info['name'])
-        emb.add_field(
-            name='Карта:',
-            value=info['map'])
-    else:
-        emb = discord.Embed(title=f'❌ Нет данных ❌', color=0xFF0000)
-    return emb
-
-
 async def steam_id_info(steam_id):
     session = requests.Session()
     bermuda_info = session.post(f'https://steamidfinder.com/lookup/{steam_id}/')
@@ -568,3 +513,42 @@ async def steam_id_info(steam_id):
         return bermuda_info.json()
     else:
         return None
+
+
+async def user_info(target, user):
+    emb = discord.Embed(title='Информация о пользователе:',
+                        color=target.color)
+    emb.add_field(
+        name='Имя:',
+        value=target)
+    emb.add_field(
+        name='Имя на сервере:',
+        value=target.nick if not 'None' else target.name)
+    status = []
+    if str(target.mobile_status) != 'offline':
+        status.append('Mobile')
+    if str(target.desktop_status) != 'offline':
+        status.append('Desktop')
+    if str(target.web_status) != 'offline':
+        status.append('Web')
+    emb.add_field(
+        name='Активность:',
+        value=f"{target.status} {' & '.join(status)}\n{target.activity}" if len(status) >= 1 else 'Offline',
+        inline=False)
+    emb.add_field(
+        name=f'Подключился к {target.guild.name}:',
+        value=f"{target.joined_at.day}.{target.joined_at.month}.{target.joined_at.year}")
+    old = datetime.datetime.now() - target.created_at
+    emb.add_field(
+        name='Возраст аккаунта:',
+        value=f"{old.days} дней",
+        inline=False)
+    roles = []
+    for role in target.roles:
+        roles.append(f"<@&{role.id}>\n")
+    roles.reverse()
+    emb.add_field(
+        name='Роли',
+        value=''.join(roles[:-1]) if len(roles) > 1 else 'Нет ролей')
+    emb.set_thumbnail(url=target.avatar_url)
+    return emb
