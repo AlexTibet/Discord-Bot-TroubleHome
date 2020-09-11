@@ -54,6 +54,13 @@ async def marriage_check_husband(ctx) -> True or False:
     return False
 
 
+async def marriage_check_self(ctx):
+    if ctx.author.id == ctx.raw_mentions[0]:
+        return True
+    else:
+        return False
+
+
 async def marriage_logic(ctx, bot):
     husband = discord.Client.get_user(bot, ctx.author.id)
     wife = discord.Client.get_user(bot, int(ctx.raw_mentions[0]))
@@ -88,7 +95,8 @@ async def sex_logic(ctx, bot):
         if answer[0].emoji == '✅':
             db = sql_db(config.db_name)
             db.set_sex_in_marriage_account(ctx.guild.name.strip().replace(' ', '_'), ctx.author.id, ctx.raw_mentions[0])
-            db.set_sex_in_marriage_account(ctx.guild.name.strip().replace(' ', '_'), ctx.raw_mentions[0], ctx.author.id)
+            if ctx.author.id != ctx.raw_mentions[0]:
+                db.set_sex_in_marriage_account(ctx.guild.name.strip().replace(' ', '_'), ctx.raw_mentions[0], ctx.author.id)
             return await gen_embedded_reply.sex_accept(husband.id, wife.id)
         elif answer[0].emoji == '❎':
             return await gen_embedded_reply.marriage_rejected(husband.id, wife.id)
@@ -110,3 +118,27 @@ async def divorce(ctx, bot):
         await ctx.author.remove_roles(marriage_role)
         await wife_member.remove_roles(marriage_role)
         return await gen_embedded_reply.divorce_complete(ctx, date)
+
+
+def ending_check(n):
+    non_ending, a_ending, stov = False, False, False
+    if len(n) == 1:
+        if "5" <= n <= "9" or n == "0":
+            stov = True
+        elif "2" <= n <= "4":
+            a_ending = True
+        else:
+            non_ending = True
+    else:
+        if n[len(n) - 1] == "0" or "5" <= n[len(n) - 1] <= "9" or n[len(n) - 2] == "1":
+            stov = True
+        elif n[len(n) - 1] == "1" and n[len(n) - 2] != "1":
+            non_ending = True
+        else:
+            a_ending = True
+    if non_ending is True:
+        return n, "раз"
+    elif a_ending is True:
+        return n, "раза"
+    elif stov is True:
+        return n, "раз"
