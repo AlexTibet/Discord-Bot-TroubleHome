@@ -21,6 +21,12 @@ class DataStorage(object):
 
 
 class SqliteDataStorage(DataStorage, ABC):
+    """
+    Класс для работы с базой данных Sqlite
+    При инициализации создаёт таблицу для хранения данных о внутриигровой валюте пользователей
+    (2 сервера, для каждого своя база)
+    Также для сервера по The Isle создаётся база для хранения данных о персонажах игроков (система слотов)
+    """
     def __init__(self, collection: str):
         self._connection = sqlite3.connect(f'{collection}.db')
         self._cursor = self._connection.cursor()
@@ -157,7 +163,7 @@ class SqliteDataStorage(DataStorage, ABC):
         self._connection.commit()
         return True
 
-    # @bot_logging
+    @bot_logging
     def set_marriage_account(self, table, discord_id: int, spouse: int) -> True or None:
         date = datetime.date.today()
         date = f'{date.year}:{date.month}:{date.day}'
@@ -183,7 +189,7 @@ class SqliteDataStorage(DataStorage, ABC):
         self._connection.commit()
         return True
 
-    # @bot_logging
+    @bot_logging
     def set_sex_in_marriage_account(self, table, discord_id: int, sex_partner: int) -> True or None:
         old_data = self.get_marriage_account(f'marriage_{table}', discord_id)
         if old_data is None:
