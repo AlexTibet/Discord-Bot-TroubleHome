@@ -3,6 +3,119 @@ from config import host, port, login, password, directory
 import datetime
 import json
 from os import path
+import config
+
+
+async def download_server_config(server: tuple) -> bool:
+    bob_host, bob_port, bob_login, bob_password, bob_directory = server
+    with FTP() as ftp:
+        ftp.connect(bob_host, bob_port)
+        ftp.login(bob_login, bob_password)
+        print(ftp)
+        print(ftp.retrlines('LIST'))
+        ftp.cwd(bob_directory)
+        print(ftp.retrlines('LIST'))
+        try:
+            with open('download_Game.ini', 'wb') as f:
+                ftp.retrbinary('RETR ' + 'Game.ini', f.write)
+                return True
+        except FileNotFoundError:
+            print("File Game.ini not found!")
+            return False
+
+
+async def upload_server_config(server: tuple) -> bool:
+    """Загружает обновлённый конфиг на сервер"""
+    try:
+        bob_host, bob_port, bob_login, bob_password, bob_directory = server
+        with FTP() as ftp:
+            ftp.connect(bob_host, bob_port)
+            ftp.login(bob_login, bob_password)
+            ftp.cwd(bob_directory)
+            ftp.storbinary('STOR ' + "Game.ini", open('Game.ini', "rb"))
+            print("Файл загружен на сервер")
+            return True
+    except Exception as error:
+        print("Ошибка загрузки", error, error.__doc__, error.__module__)
+        return False
+
+
+def download_server_saves(server: tuple) -> bool:
+    host, port, login, password, directory = server
+    print(host, port)
+    print(login, password)
+    print(directory)
+    with FTP() as ftp:
+        ftp.connect(host, port)
+        ftp.login(login, password)
+        print(ftp)
+        print(ftp.retrlines('LIST'))
+        ftp.cwd(directory)
+        print(ftp.retrlines('LIST'))
+        try:
+            with open(f'{path.dirname(__file__)}/server_saves/DeathHistory.sav', 'wb') as f:
+                ftp.retrbinary('RETR ' + 'SERVER_Rival_Shores_DeathHistory.sav', f.write)
+
+            with open(f'{path.dirname(__file__)}/server_saves/DynamicWorld.sav', 'wb') as f:
+                ftp.retrbinary('RETR ' + 'SERVER_Rival_Shores_DynamicWorld.sav', f.write)
+
+            with open(f'{path.dirname(__file__)}/server_saves/Entities.sav', 'wb') as f:
+                ftp.retrbinary('RETR ' + 'SERVER_Rival_Shores_Entities.sav', f.write)
+
+            with open(f'{path.dirname(__file__)}/server_saves/PlayerPunishments.sav', 'wb') as f:
+                ftp.retrbinary('RETR ' + 'SERVER_Rival_Shores_PlayerPunishments.sav', f.write)
+
+            with open(f'{path.dirname(__file__)}/server_saves/UserProfiles.sav', 'wb') as f:
+                ftp.retrbinary('RETR ' + 'SERVER_Rival_Shores_UserProfiles.sav', f.write)
+
+            with open(f'{path.dirname(__file__)}/server_saves/WorldItems.sav', 'wb') as f:
+                ftp.retrbinary('RETR ' + 'SERVER_Rival_Shores_WorldItems.sav', f.write)
+
+            return True
+        except FileNotFoundError:
+            print("File not found!")
+            return False
+
+
+def upload_server_saves(server: tuple) -> bool:
+    """Загружает обновлённый конфиг на сервер"""
+    try:
+        bob_host, bob_port, bob_login, bob_password, bob_directory = server
+        with FTP() as ftp:
+            ftp.connect(bob_host, bob_port)
+            ftp.login(bob_login, bob_password)
+            print(ftp.retrlines('LIST'))
+            ftp.cwd(bob_directory)
+            print(ftp.retrlines('LIST'))
+            ftp.storbinary(
+                'STOR ' + 'SERVER_Rival_Shores_DeathHistory.sav',
+                open(f'{path.dirname(__file__)}/server_saves/DeathHistory.sav', "rb")
+            )
+            ftp.storbinary(
+                'STOR ' + 'SERVER_Rival_Shores_DynamicWorld.sav',
+                open(f'{path.dirname(__file__)}/server_saves/DynamicWorld.sav', "rb")
+            )
+            ftp.storbinary(
+                'STOR ' + 'SERVER_Rival_Shores_Entities.sav',
+                open(f'{path.dirname(__file__)}/server_saves/Entities.sav', "rb")
+            )
+            ftp.storbinary(
+                'STOR ' + 'SERVER_Rival_Shores_PlayerPunishments.sav',
+                open(f'{path.dirname(__file__)}/server_saves/PlayerPunishments.sav', "rb")
+            )
+            ftp.storbinary(
+                'STOR ' + 'SERVER_Rival_Shores_UserProfiles.sav',
+                open(f'{path.dirname(__file__)}/server_saves/UserProfiles.sav', "rb")
+            )
+            ftp.storbinary(
+                'STOR ' + 'SERVER_Rival_Shores_WorldItems.sav',
+                open(f'{path.dirname(__file__)}/server_saves/WorldItems.sav', "rb")
+            )
+            print("Файл загружен на сервер")
+            return True
+    except Exception as error:
+        print("Ошибка загрузки", error, error.__doc__, error.__module__)
+        return False
 
 
 async def download_log(steam_id: int) -> str:
