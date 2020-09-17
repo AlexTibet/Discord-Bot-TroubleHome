@@ -10,6 +10,12 @@ import config
 import server_info
 
 
+async def no_access() -> discord.embeds:
+    emb = discord.Embed(title=f'❌ Нет доступа ❌', color=0xFF0000)
+    emb.set_footer(text='Команда доступна только техникам сервера')
+    return emb
+
+
 async def online_info():
     info = await server_info.bermuda_server_info()
     if info is not None:
