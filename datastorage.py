@@ -21,12 +21,6 @@ class DataStorage(object):
 
 
 class SqliteDataStorage(DataStorage, ABC):
-    """
-    Класс для работы с базой данных Sqlite
-    При инициализации создаёт таблицу для хранения данных о внутриигровой валюте пользователей
-    (2 сервера, для каждого своя база)
-    Также для сервера по The Isle создаётся база для хранения данных о персонажах игроков (система слотов)
-    """
     def __init__(self, collection: str):
         self._connection = sqlite3.connect(f'{collection}.db')
         self._cursor = self._connection.cursor()
