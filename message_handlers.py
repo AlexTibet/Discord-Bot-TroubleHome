@@ -114,6 +114,5 @@ async def game_message(ctx, channel, bot):
         elif re.search(r"^[Нн]а\b", message[0]) and re.search(r"ком", message[1]) and re.search(
                 r"поиграть", message[2]):
             await channel.send(embed=await gen_embedded_reply.who_should_i_play(ctx))
-
     except IndexError:
         pass  # просто сообщение, не команда

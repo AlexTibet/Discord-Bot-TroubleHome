@@ -112,12 +112,12 @@ class MyClient(discord.Client):
         if channel.id == config.TEST_SERVER_CONFIG_CHANNEL or channel.id == config.SERVER_CONFIG_CHANNEL:
             try:
                 if re.search(r'[Пп]рописать', message[0]) or re.search(r'[Сс]нять', message[0]):
-                    if await role_access(ctx, [738645953707376641]):
+                    if role_access(ctx, config.TECHNIC_ROLE):
                         await editing_configuration(channel, message)
                     else:
                         await channel.send(embed=await gen_embedded_reply.no_access())
                 elif re.search(r'[Пп]еренести', message[0]) and re.search(r'с[еэ]йвы', message[1]):
-                    if await role_access(ctx, [738645953707376641]):
+                    if role_access(ctx, config.TECHNIC_ROLE):
                         await channel.send('```http\nНачинаю скачивание базы данных с основного сервера\n```')
                         test_server = (config.test_host, config.test_port, config.test_login, config.test_password,
                                        config.test_saves_directory)
@@ -200,7 +200,7 @@ class MyClient(discord.Client):
     #         await channel.send(f"\n`И исправил так:`\n{payload.data['content']}")
 
 
-async def role_access(ctx, access_list) -> bool:
+def role_access(ctx, access_list) -> bool:
     """Checking access member to command"""
     for i in ctx.author.roles:
         if i.id in access_list:
