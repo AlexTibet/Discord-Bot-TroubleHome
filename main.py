@@ -9,8 +9,9 @@ import message_handlers
 import gen_embedded_reply
 import gen_emb_for_theisle
 import server_info
-import server_config_editor
+from server_config_editor import editing_configuration
 import config
+from finde_and_download import download_server_saves, upload_server_saves
 
 
 class MyClient(discord.Client):
@@ -28,7 +29,7 @@ class MyClient(discord.Client):
         sql_db = SqliteDataStorage(config.db_name)
         print("Connection to the database is complete.")
         # Добавление пользователей в базу данных
-        for guild in self.guilds:   # для каждого сервера
+        for guild in self.guilds:  # для каждого сервера
             # создаём таблицы браков (для хранения данных о "браках" пользователей)
             sql_db.create_marriage_tabel(guild.name.strip().replace(' ', '_'))  # нельзя чтобы в названии был пробел
             table = None
@@ -37,7 +38,7 @@ class MyClient(discord.Client):
             if re.search(config.TheIsle_server_name, guild.name):
                 table = "TheIsle_Users"
             if table is not None:
-                for member in guild.members:    # для каждого участника сервера
+                for member in guild.members:  # для каждого участника сервера
                     member_status = False
                     accounts = sql_db.get_accounts(table)
                     for account in accounts:
@@ -108,23 +109,35 @@ class MyClient(discord.Client):
                     await gen_emb_for_theisle.dino_catalog(channel)
             except IndexError:
                 pass
-        if channel.id == config.SERVER_CONFIG_CHANNEL:
+        if channel.id == config.TEST_SERVER_CONFIG_CHANNEL or channel.id == config.SERVER_CONFIG_CHANNEL:
             try:
-                if re.search(r"^[Аа]дминка\b", message[0]) and re.search(r"^[\d]{17}\b", message[1].split("/")[0].split("<")[0]):
-                    if await role_access(ctx, [config.TECHNIC_ROLE, config.OWNER_ROLE]):
-                        try:
-                            server_config = await server_config_editor.editing_preparation()
-                            response = await server_config_editor.add_server_admin(message[1], server_config)
-                            if response:
-                                emb = discord.Embed(title=f'✅ Готово', color=0x20B2AA)
-                                emb.set_footer(text='Админка прописана, конфиг загружен на сервер')
-                                await channel.send(embed=emb)
-                        except FileNotFoundError:
-                            emb = discord.Embed(title=f'❌ Сервер не отвечает.❌', color=0xFF0000)
-                            await channel.send(embed=emb)
+                if re.search(r'[Пп]рописать', message[0]) or re.search(r'[Сс]нять', message[0]):
+                    if await role_access(ctx, [738645953707376641]):
+                        await editing_configuration(channel, message)
                     else:
-                        emb = discord.Embed(title=f'❌ Нет доступа к команде ❌', color=0xFF0000)
-                        await channel.send(embed=emb)
+                        await channel.send(embed=await gen_embedded_reply.no_access())
+                elif re.search(r'[Пп]еренести', message[0]) and re.search(r'с[еэ]йвы', message[1]):
+                    if await role_access(ctx, [738645953707376641]):
+                        await channel.send('```http\nНачинаю скачивание базы данных с основного сервера\n```')
+                        test_server = (config.test_host, config.test_port, config.test_login, config.test_password,
+                                       config.test_saves_directory)
+                        main_server = (config.main_host, config.main_port, config.main_login, config.main_password,
+                                       config.main_saves_directory)
+                        if download_server_saves(main_server):
+                            await channel.send('☑ *База данных основного сервера скопирована*')
+
+                        else:
+                            await channel.send('❌ *Ошибка. Не удалось скопировать базу данных основного сервера*')
+                            raise IndexError
+                        await channel.send('☑ *Загружаю базу данных на тестовый сервер*')
+                        if upload_server_saves(test_server):
+                            await channel.send('☑ *База данных основного сервера загружена на тестовый сервер*')
+                            await channel.send('```http\n'
+                                               'Перенос базы данных завершен, можно запускать тест-сервер\n```')
+                        else:
+                            await channel.send('❌ *Ошибка. Не удалось загрузить базу данных на тестовый сервер*')
+                            await channel.send('```diff\nПеренос базы данных не удался\n```')
+                            raise IndexError
             except IndexError:
                 pass
 
@@ -166,13 +179,25 @@ class MyClient(discord.Client):
         if payload.channel_id in config.ADMIN_CHANNEL:
             channel = discord.Client.get_channel(self, payload.channel_id)
             await channel.send(f"`А х*й ты чё тут удалишь!`\nЭто <#{payload.channel_id}>!!!\n"
-                               f"{payload.cached_message.author} отправлял сообщение:\n"
+                               f"**{payload.cached_message.author}** отправлял сообщение:\n"
                                f"{payload.cached_message.content}")
             for emb in payload.cached_message.embeds:
                 await channel.send(embed=emb)
             for attach in payload.cached_message.attachments:
                 await channel.send(attach.url)
                 await channel.send(attach.proxy_url)
+
+    # async def on_raw_message_edit(self, payload):
+    #     if payload.channel_id in config.ADMIN_CHANNEL:
+    #         channel = discord.Client.get_channel(self, payload.channel_id)
+    #         try:
+    #             author = payload.cached_message.author
+    #         except AttributeError:
+    #             author = ''
+    #         await channel.send(f"`А х*й ты чё тут исправишь просто так!`\nЭто <#{payload.channel_id}>!!!\n\n"
+    #                            f"**{author}** `отправлял сообщение:`\n\n"
+    #                            f"{payload.cached_message.content}")
+    #         await channel.send(f"\n`И исправил так:`\n{payload.data['content']}")
 
 
 async def role_access(ctx, access_list) -> bool:
@@ -182,6 +207,7 @@ async def role_access(ctx, access_list) -> bool:
             return True
     else:
         return False
+
 
 # RUN
 client = MyClient()
