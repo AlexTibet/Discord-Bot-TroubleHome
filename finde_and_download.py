@@ -1,9 +1,28 @@
 from ftplib import FTP
-from config import host, port, login, password, directory
+from config import \
+    host, port, login, password, directory,\
+    main_host, main_port, main_login, main_password, main_logs_directory
 import datetime
 import json
 from os import path
 import config
+
+
+async def download_server_log() -> bool:
+    with FTP() as ftp:
+        ftp.connect(main_host, main_port)
+        ftp.login(main_login, main_password)
+        print(ftp)
+        print(ftp.retrlines('LIST'))
+        ftp.cwd(main_logs_directory)
+        print(ftp.retrlines('LIST'))
+        try:
+            with open('download_logs.log', 'wb') as f:
+                ftp.retrbinary('RETR ' + 'BeastsOfBermuda.log', f.write)
+                return True
+        except FileNotFoundError:
+            print("File BeastsOfBermuda.log not found!")
+            return False
 
 
 async def download_server_config(server: tuple) -> bool:
