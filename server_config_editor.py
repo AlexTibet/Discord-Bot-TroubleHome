@@ -6,7 +6,7 @@ from finde_and_download import download_server_config, upload_server_config
 
 async def editing_configuration(channel, message):
     try:
-        await channel.send('```http\nСкачиваю файл конфигурации сервера\n```')
+        await channel.send('```fix\nСкачиваю файл конфигурации сервера\n```')
         await editing_preparation(channel, message)
     except FileNotFoundError:
         await channel.send('> **Ошибка, файл не найден**')
@@ -50,7 +50,7 @@ async def editing_preparation(channel, message):
             if await get_new_config(*data):
                 await channel.send('☑ *Новый файл конфигурации сервера готов*')
                 if await upload_server_config(server):
-                    await channel.send('```http\nФайл конфигурации загружен на сервер```')
+                    await channel.send('```fix\nФайл конфигурации загружен на сервер```')
                 else:
                     await channel.send('```diff\nНе удалось загрузить файл конфигурации на сервер\nПопробуйте снова```')
             else:
