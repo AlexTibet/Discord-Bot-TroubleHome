@@ -12,7 +12,7 @@ import server_info
 
 async def no_access() -> discord.embeds:
     emb = discord.Embed(title=f'❌ Нет доступа ❌', color=0xFF0000)
-    emb.set_footer(text='Команда доступна только техникам сервера')
+    emb.set_footer(text='Данная команда вам недоступна')
     return emb
 
 
@@ -261,7 +261,8 @@ async def sex_history(ctx, channel, whore=None):
                     count += 1
                     partners = ''
                     for partner in sex_historyes[member]:
-                        name = f"<@{partner.split(':')[0]}>" if int(partner.split(':')[0]) != int(member) else "``Дрочит``"
+                        name = f"<@{partner.split(':')[0]}>" if int(partner.split(':')[0]) != int(
+                            member) else "``Дрочит``"
                         partners += f"\n\t\t{name} - {' '.join(game_logic.ending_check(partner.split(':')[1]))}"
                     text += f"\n\n💞 <@{member}> ``-> {sex_count[member]}``\nПартнёры:{partners}"
 
@@ -329,13 +330,13 @@ async def marriage_history(ctx, channel):
             emb = discord.Embed(
                 description=text,
                 color=0xFA8072)
-        # if len(marriages_history[i]) > 1:
-        #     partners = ''
-        #     for partner in marriages_history[i]:
-        #         partners += f"<@{partner.split('_')[1]}> "
-        #     emb.add_field(
-        #         name='💔 Бывшие:',
-        #         value=f"{partners}")
+            # if len(marriages_history[i]) > 1:
+            #     partners = ''
+            #     for partner in marriages_history[i]:
+            #         partners += f"<@{partner.split('_')[1]}> "
+            #     emb.add_field(
+            #         name='💔 Бывшие:',
+            #         value=f"{partners}")
             emb.set_footer(text=f"Люди нашедшие друг друга на {ctx.guild.name}", icon_url=ctx.guild.icon_url)
             await channel.send(embed=emb)
             emb.clear_fields()
@@ -514,11 +515,48 @@ async def divorce_fail(ctx):
 
 async def steam_id_info(steam_id):
     session = requests.Session()
-    bermuda_info = session.post(f'https://steamidfinder.com/lookup/{steam_id}/')
-    if bermuda_info.status_code == 200:
-        return bermuda_info.json()
-    else:
-        return None
+    try:
+        info_from_steam = session.get(
+            f'http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key={config.steam_api_key}'
+            f'&steamids={steam_id}')
+        if info_from_steam.ok:
+            player_info = info_from_steam.json()['response']['players'][0]
+            emb = discord.Embed(title='Информация об аккаунте **Steam**:',
+                                color=0x000000)
+            emb.add_field(
+                name='Никнейм:',
+                value=f"**{player_info['personaname']}**")
+            if player_info['personastate'] == 1:
+                stat = 'Онлайн'
+            elif player_info['personastate'] == 2:
+                stat = 'Занят'
+            elif player_info['personastate'] == 3:
+                stat = 'Нет на месте'
+            elif player_info['personastate'] == 4:
+                stat = 'Наелся и спит'
+            else:
+                stat = 'Не в сети'
+            emb.add_field(
+                name='Статус:',
+                value=stat)
+            info_about_old_nikname = session.post(f'https://steamcommunity.com/profiles/{steam_id}/ajaxaliases/')
+            if info_about_old_nikname.ok:
+                nik_history = ''
+                for nik in info_about_old_nikname.json():
+                    nik_history += f"`{nik['newname']}` *({nik['timechanged']})*\n"
+                emb.add_field(
+                    name='Другие имена:',
+                    value=nik_history if len(nik_history) > 0 else 'Нет',
+                    inline=False)
+            emb.add_field(
+                name='Ссылка на профиль:',
+                value=player_info['profileurl'])
+            emb.set_thumbnail(url=player_info['avatarfull'])
+            emb.set_footer(text=f"SteamID:{steam_id}")
+            return emb
+
+    except requests.exceptions.ConnectionError:
+        return 'Нельзя проверять слишком часто. Попробуйте через минутку.'
 
 
 async def user_info(target, user):
