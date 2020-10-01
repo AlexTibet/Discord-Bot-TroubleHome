@@ -12,6 +12,7 @@ import server_info
 from server_config_editor import editing_configuration
 import config
 from finde_and_download import download_server_saves, upload_server_saves
+from check_server_admins import check_admin_online
 
 
 class MyClient(discord.Client):
@@ -55,15 +56,27 @@ class MyClient(discord.Client):
 
     async def on_message(self, ctx):
         """Смотрим каждое сообщение в доступных каналах, выводим в консоль и обрабатываем"""
-        print(f"{ctx.guild}| {ctx.channel} | {ctx.author} |{ctx.content}")
+        time = str(datetime.datetime.now().time())
+        message_history = f"{time[0:8]}|{ctx.guild}| {ctx.channel} | {ctx.author} |{ctx.content}\n"
+        if len(ctx.embeds) > 0:
+            for emb in ctx.embeds:
+                message_history += f"EMBED\nTitle:{emb.title}\nDescription:{emb.description}\nurl:{emb.url}\n"
+                for field in emb.fields:
+                    message_history += f"field:{field}\n"
+        if len(ctx.attachments) > 0:
+            for attachment in ctx.attachments:
+                message_history += f"\tВложение:{attachment.url}\n"
+        print(message_history)
+        with open('message_history.txt', 'a', encoding='utf-8') as file:
+            file.write(message_history)
         channel = discord.Client.get_channel(self, ctx.channel.id)
         message = ctx.content.split()
         if channel.id in config.ADMIN_CHANNEL:  # channel id list
             try:
-                if re.search(r"[\d]{17}", message[0].split("/")[0].split("<")[0]):
+                if re.search(r"^[\d]{17}\b", message[0].split("/")[0].split("<")[0]):
                     steam_id = message[0].strip()
-                    steam_find_url = f'https://steamidfinder.com/lookup/{steam_id}/'
-                    await channel.send(steam_find_url)
+                    # steam_find_url = f'https://steamidfinder.com/lookup/{steam_id}/'
+                    await channel.send(embed=await gen_embedded_reply.steam_id_info(steam_id))
 
                 if re.search(r"^[Кк]ако[йв]\b", message[0]) and re.search(r"^[Оо]нлайн\b", message[1].replace('?', '')):
                     await channel.send(embed=await gen_embedded_reply.online_info())
@@ -77,6 +90,8 @@ class MyClient(discord.Client):
                         name='Имя:',
                         value=f"Сейчас бустят сервер:\n{''.join(boosters)}")
                     await channel.send(embed=emb)
+                if re.search(r'[Сс]колько', message[0]) and re.search(r'админов', message[1]) and re.search('онлайн',                                                                                         message[2]):
+                    await channel.send(embed=await check_admin_online())
             except IndexError:
                 pass
 
@@ -118,7 +133,7 @@ class MyClient(discord.Client):
                         await channel.send(embed=await gen_embedded_reply.no_access())
                 elif re.search(r'[Пп]еренести', message[0]) and re.search(r'с[еэ]йвы', message[1]):
                     if role_access(ctx, config.TECHNIC_ROLE):
-                        await channel.send('```http\nНачинаю скачивание базы данных с основного сервера\n```')
+                        await channel.send('```fix\nНачинаю скачивание базы данных с основного сервера\n```')
                         test_server = (config.test_host, config.test_port, config.test_login, config.test_password,
                                        config.test_saves_directory)
                         main_server = (config.main_host, config.main_port, config.main_login, config.main_password,
@@ -132,12 +147,40 @@ class MyClient(discord.Client):
                         await channel.send('☑ *Загружаю базу данных на тестовый сервер*')
                         if upload_server_saves(test_server):
                             await channel.send('☑ *База данных основного сервера загружена на тестовый сервер*')
-                            await channel.send('```http\n'
+                            await channel.send('```fix\n'
                                                'Перенос базы данных завершен, можно запускать тест-сервер\n```')
                         else:
                             await channel.send('❌ *Ошибка. Не удалось загрузить базу данных на тестовый сервер*')
                             await channel.send('```diff\nПеренос базы данных не удался\n```')
                             raise IndexError
+            except IndexError:
+                pass
+        if re.search(r'^![Мм]ут', message[0]):
+            try:
+                if role_access(ctx, config.MODERATOR_ROLES):
+                    toxic = ctx.author.guild.get_member(ctx.raw_mentions[0])
+                    if toxic.bot:
+                        raise IndexError
+                    old_roles = [f'<@&{i.id}>' for i in toxic.roles[1:]]
+                    print(old_roles)
+                    toxic_role = discord.utils.get(ctx.author.guild.roles, id=config.TOXIC_ROLE)
+                    print(toxic)
+                    for i in toxic.roles[1:]:
+                        role = discord.utils.get(ctx.author.guild.roles, id=i.id)
+                        try:
+                            await toxic.remove_roles(role)
+                        except (discord.Forbidden, discord.HTTPException):
+                            continue
+                    await toxic.add_roles(toxic_role)
+                    emb = discord.Embed(title=f"{toxic} получает мут в дискорде {ctx.author.guild.name}", color=0xf6ff00)
+                    emb.add_field(
+                        name='Сняты роли:',
+                        value='\n'.join(old_roles))
+                    await channel.send(f'<@{toxic.id}> `Вы получите роль`<@&{toxic_role.id}>\n'
+                                       f'`которая не позволит Вам пользоваться чатами.\n'
+                                       f'Пожалуйста ознакомьтесь с`<#{config.RULES_CHANNEL}>', embed=emb)
+                else:
+                    await channel.send(embed=await gen_embedded_reply.no_access())
             except IndexError:
                 pass
 
@@ -156,9 +199,8 @@ class MyClient(discord.Client):
             try:
                 online = await server_info.bermuda_server_info()
                 await client.online_activity(online)
-                print(f"{self} установил статус, ожидание")
                 await asyncio.sleep(30)
-            except Exception as  error:
+            except Exception as error:
                 print(error)
                 await asyncio.sleep(30)
                 continue
