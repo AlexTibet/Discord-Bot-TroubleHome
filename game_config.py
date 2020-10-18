@@ -883,6 +883,7 @@ OLIVIA_DRINK = [
     'https://media1.tenor.com/images/8da2c2cc11c40f3f262de2afea341f23/tenor.gif',
     'https://media1.tenor.com/images/a47c71b0aa8baa6afb515fe50fc2ab0c/tenor.gif'
 ]
+
 GIF_REST = [
     'https://cdn.discordapp.com/attachments/581134474092347392/738742366822727680/8ad97846cb03.gif',
     'https://cdn.discordapp.com/attachments/581134474092347392/738742370627223552/28e27f1c01c66655b3575108b3dff7b0.gif',
