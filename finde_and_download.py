@@ -1,8 +1,122 @@
 from ftplib import FTP
-from config import host, port, login, password, directory
+from config import \
+    host, port, login, password, directory,\
+    main_host, main_port, main_login, main_password, main_logs_directory
 import datetime
 import json
 from os import path
+
+
+async def download_server_log() -> bool:
+    """Скачиваем  файл текущих логов игрового сервера (основного)"""
+    with FTP() as ftp:
+        ftp.connect(main_host, main_port)
+        ftp.login(main_login, main_password)
+        ftp.cwd(main_logs_directory)
+        try:
+            with open('download_logs.log', 'wb') as f:
+                ftp.retrbinary('RETR ' + 'BeastsOfBermuda.log', f.write)
+                return True
+        except FileNotFoundError:
+            return False
+
+
+async def download_server_config(server: tuple) -> bool:
+    """Скачиваем  конфигурационный файл с игрового сервера server"""
+    bob_host, bob_port, bob_login, bob_password, bob_directory = server
+    with FTP() as ftp:
+        ftp.connect(bob_host, bob_port)
+        ftp.login(bob_login, bob_password)
+        ftp.cwd(bob_directory)
+        try:
+            with open('download_Game.ini', 'wb') as f:
+                ftp.retrbinary('RETR ' + 'Game.ini', f.write)
+                return True
+        except FileNotFoundError:
+            return False
+
+
+async def upload_server_config(server: tuple) -> bool:
+    """Загружаем обновлённый конфигурационный файл на сервер server"""
+    try:
+        bob_host, bob_port, bob_login, bob_password, bob_directory = server
+        with FTP() as ftp:
+            ftp.connect(bob_host, bob_port)
+            ftp.login(bob_login, bob_password)
+            ftp.cwd(bob_directory)
+            ftp.storbinary('STOR ' + "Game.ini", open('Game.ini', "rb"))
+            return True
+    except Exception:
+        return False
+
+
+def download_server_saves(server: tuple) -> bool:
+    """Скачиваем сохранения игрового сервера server"""
+    host, port, login, password, directory = server
+    with FTP() as ftp:
+        ftp.connect(host, port)
+        ftp.login(login, password)
+        ftp.cwd(directory)
+        try:
+            with open(f'{path.dirname(__file__)}/server_saves/DeathHistory.sav', 'wb') as f:
+                ftp.retrbinary('RETR ' + 'SERVER_Rival_Shores_DeathHistory.sav', f.write)
+
+            with open(f'{path.dirname(__file__)}/server_saves/DynamicWorld.sav', 'wb') as f:
+                ftp.retrbinary('RETR ' + 'SERVER_Rival_Shores_DynamicWorld.sav', f.write)
+
+            with open(f'{path.dirname(__file__)}/server_saves/Entities.sav', 'wb') as f:
+                ftp.retrbinary('RETR ' + 'SERVER_Rival_Shores_Entities.sav', f.write)
+
+            with open(f'{path.dirname(__file__)}/server_saves/PlayerPunishments.sav', 'wb') as f:
+                ftp.retrbinary('RETR ' + 'SERVER_Rival_Shores_PlayerPunishments.sav', f.write)
+
+            with open(f'{path.dirname(__file__)}/server_saves/UserProfiles.sav', 'wb') as f:
+                ftp.retrbinary('RETR ' + 'SERVER_Rival_Shores_UserProfiles.sav', f.write)
+
+            with open(f'{path.dirname(__file__)}/server_saves/WorldItems.sav', 'wb') as f:
+                ftp.retrbinary('RETR ' + 'SERVER_Rival_Shores_WorldItems.sav', f.write)
+
+            return True
+        except FileNotFoundError:
+            return False
+
+
+def upload_server_saves(server: tuple) -> bool:
+    """Загружаем сохранения на игровой сервер server"""
+    try:
+        bob_host, bob_port, bob_login, bob_password, bob_directory = server
+        with FTP() as ftp:
+            ftp.connect(bob_host, bob_port)
+            ftp.login(bob_login, bob_password)
+            ftp.cwd(bob_directory)
+            ftp.storbinary(
+                'STOR ' + 'SERVER_Rival_Shores_DeathHistory.sav',
+                open(f'{path.dirname(__file__)}/server_saves/DeathHistory.sav', "rb")
+            )
+            ftp.storbinary(
+                'STOR ' + 'SERVER_Rival_Shores_DynamicWorld.sav',
+                open(f'{path.dirname(__file__)}/server_saves/DynamicWorld.sav', "rb")
+            )
+            ftp.storbinary(
+                'STOR ' + 'SERVER_Rival_Shores_Entities.sav',
+                open(f'{path.dirname(__file__)}/server_saves/Entities.sav', "rb")
+            )
+            ftp.storbinary(
+                'STOR ' + 'SERVER_Rival_Shores_PlayerPunishments.sav',
+                open(f'{path.dirname(__file__)}/server_saves/PlayerPunishments.sav', "rb")
+            )
+            ftp.storbinary(
+                'STOR ' + 'SERVER_Rival_Shores_UserProfiles.sav',
+                open(f'{path.dirname(__file__)}/server_saves/UserProfiles.sav', "rb")
+            )
+            ftp.storbinary(
+                'STOR ' + 'SERVER_Rival_Shores_WorldItems.sav',
+                open(f'{path.dirname(__file__)}/server_saves/WorldItems.sav', "rb")
+            )
+            return True
+    except Exception as error:
+        print("Ошибка загрузки", error, error.__doc__, error.__module__)
+        return False
 
 
 async def download_log(steam_id: int) -> str:
@@ -17,8 +131,6 @@ async def download_log(steam_id: int) -> str:
             with open(download_filename, 'wb') as f:
                 ftp.retrbinary('RETR ' + f"{steam_id}.json", f.write)
                 return download_filename
-        else:
-            print(f"Игрока {steam_id} нет в базе данных")
 
 
 async def upload_log(filename: str, steam_id: int) -> bool:
@@ -29,10 +141,8 @@ async def upload_log(filename: str, steam_id: int) -> bool:
             ftp.login(login, password)
             ftp.cwd(directory)
             ftp.storbinary('STOR ' + f"{steam_id}.json", open(filename, "rb"))
-            print("Файл загружен на сервер")
             return True
-    except Exception as error:
-        print("Ошибка загрузки", error, error.__doc__, error.__module__)
+    except Exception:
         return False
 
 
@@ -40,11 +150,8 @@ async def data_modification(steam_id: int, new_dino: str) -> str or False:
     """Изменяет данные игрока в .json"""
     file = await download_log(steam_id)
     if file is None:
-        print(f"Игрока {steam_id} нет в базе данных")
         return False
-    print(f"Модифицируем файл {file}")
     with open(file, 'r') as read_file:
-        print(f"Файл {file} готов к модификации")
         data = json.load(read_file)
         if data is None:
             return False
@@ -55,10 +162,8 @@ async def data_modification(steam_id: int, new_dino: str) -> str or False:
         data['Thirst'] = "20000"
         data['Stamina'] = "20000"
         data['Health'] = "20000"
-        print(f"Изменения внесены")
         with open(f"{path.dirname(__file__)}/history/{steam_id}.json", "w") as output_file:
             json.dump(data, output_file, indent=4)
-            print(f"Изменённый файл ({steam_id}.json) готов к загрузке на сервер")
         return f"{path.dirname(__file__)}/history/{steam_id}.json"
 
 

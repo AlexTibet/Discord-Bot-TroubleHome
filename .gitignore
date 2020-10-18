@@ -2,5 +2,9 @@
 **/venv
 **/__pycache__
 **/history
+**/server_saves
 config.py
 TroubleHomeDB.db
+bot_logs.txt
+server_info.py
+*.ini
