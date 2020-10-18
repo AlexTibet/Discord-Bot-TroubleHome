@@ -7,29 +7,147 @@ import websockets
 from datastorage import SqliteDataStorage
 import message_handlers
 import gen_embedded_reply
-import gen_emb_for_theisle
 import server_info
-from server_config_editor import editing_configuration
+
 import config
-from finde_and_download import download_server_saves, upload_server_saves
-from check_server_admins import check_admin_online
 
 
 class MyClient(discord.Client):
-
+    """
+    Класс обработчик событий Discord
+    """
     async def on_ready(self):
-        """Действия при запуске бота (Отображение информации в консоль)"""
+        """
+        Действия при запуске бота
+        (Отображение информации о названии серверов на которых запустился бот в консоль)
+        """
         print(f'Logged on as {self.user}!')
         for i in range(len(self.guilds)):
             print(f"Bot run on server '{self.guilds[i].name}' with serverID = {self.guilds[i].id},"
                   f" with {self.guilds[i].member_count} users")
-        print(self.guilds)
-        await MyClient.change_presence(self, status=discord.Status.online, activity=discord.Game('Кусь'))
-        print(self.activity)
         print("Connecting to database...")
         sql_db = SqliteDataStorage(config.db_name)
         print("Connection to the database is complete.")
         # Добавление пользователей в базу данных
+        await self.database_filling(sql_db)
+        await self.starting_online_check()
+        print("Run online activity check")
+
+    async def on_message(self, ctx: discord.Message):
+        """
+        Метод обработки события отправки сообщения любым пользователем в любой канал.
+        Смотрим каждое сообщение в доступных каналах, выводим в консоль и обрабатываем
+        Вызываем функции обработки сообщений соответствующих категорий команд
+        """
+        await message_handlers.message_logging(ctx)
+
+        channel = discord.Client.get_channel(self, ctx.channel.id)
+        await message_handlers.moderators_message(ctx, channel)
+
+        if channel.id in config.ADMIN_CHANNEL:
+            await message_handlers.admin_message(ctx, channel)
+
+        if channel.id in config.GAME_CHANNEL:
+            await message_handlers.game_message(ctx, channel, self)
+
+        if channel.id in config.ADMIN_CHANNEL or channel.id in config.GAME_CHANNEL:
+            await message_handlers.user_info_message(ctx, channel, self)
+
+        if channel.id == config.TEST_SERVER_CONFIG_CHANNEL or channel.id == config.SERVER_CONFIG_CHANNEL:
+            await message_handlers.server_config_message(ctx, channel)
+
+        if channel.id in config.DINO_CHANNEL:  # только для серверов The Isle
+            await message_handlers.dino_from_the_isle_message(ctx, channel)
+
+    async def on_member_join(self, member: discord.Member):
+        """
+        Метод обработки события появления нового пользователя на дискорд сервере
+        Реализована проверка на "твинк"
+        Если возраст аккаунта менее 1 дня информация о нём отправляется в чат администраторов
+        """
+        join_time = datetime.datetime.now()
+        ban_time = datetime.timedelta(days=1)
+        if ban_time > join_time - member.created_at:
+            channel = discord.Client.get_channel(self, config.ADMIN_CHANNEL[1])
+            emb = await gen_embedded_reply.user_info(member)
+            await channel.send(f'<@{member.id}> *это новенький акк которому менее суток*\n'
+                               f'*возможно стоит обратить внимание* 🍌 ', embed=emb)
+
+    async def on_raw_message_delete(self, payload: discord.RawMessageDeleteEvent):
+        """
+        Метод обработки события удаления сообщения в любом канале к которому у бота есть доступ
+        Для чатов администраторов реализован запрет на удаление сообщений
+        Удалённое сообщение переотправляется в тот же чат в котором было удалено
+        """
+        if payload.channel_id in config.ADMIN_CHANNEL:
+            channel = discord.Client.get_channel(self, payload.channel_id)
+            await channel.send(f"`А ничего ты тут не удалишь!`\nЭто <#{payload.channel_id}>!!!\n"
+                               f"**{payload.cached_message.author}** отправлял сообщение:\n"
+                               f"{payload.cached_message.content}")
+            for emb in payload.cached_message.embeds:
+                await channel.send(embed=emb)
+            for attach in payload.cached_message.attachments:
+                await channel.send(attach.url)
+                await channel.send(attach.proxy_url)
+
+    # ОТКЛЮЧЕНО, в дальнейшем будет использовано для логгирования редактирований сообщений
+    # async def on_raw_message_edit(self, payload):
+    # """
+    # Метод обработки события редактирования сообщения в любом канале к которому у бота есть доступ
+    # Для чатов администраторов реализован запрет на редактирование сообщений
+    # Первоначальное сообщение переотправляется в тот же чат в котором было отредактировано
+    # """
+    #     if payload.channel_id in config.ADMIN_CHANNEL:
+    #         channel = discord.Client.get_channel(self, payload.channel_id)
+    #         try:
+    #             author = payload.cached_message.author
+    #         except AttributeError:
+    #             author = ''
+    #         await channel.send(f"`А ничего ты тут не исправишь просто так!`\nЭто <#{payload.channel_id}>!!!\n\n"
+    #                            f"**{author}** `отправлял сообщение:`\n\n"
+    #                            f"{payload.cached_message.content}")
+    #         await channel.send(f"\n`И исправил так:`\n{payload.data['content']}")
+
+    @staticmethod
+    async def starting_online_check():
+        """
+        Отслеживание ко-во игроков на игровом сервере и выставление в качестве статуса
+        Пример: (Играет в 96 из 100)
+        Каждые 30 сек отправляет запрос на хост, получает данные о текущем онлайне
+        Вызывает метод подставляющий полученную информацию в статус бота
+        """
+        while True:
+            try:
+                online = await server_info.bermuda_server_info()
+                await client.online_activity(online)
+                await asyncio.sleep(30)
+            except Exception as error:
+                print(error)
+                await asyncio.sleep(30)
+                continue
+
+    @staticmethod
+    async def online_activity(info: dict):
+        """
+        Выставление в качестве статуса бота данных о текущем онлайне сервера
+        info: словарь со словарём вида info = {'players': {'active': 96, 'total': 100 }}'
+        с данными о текущем онлайне
+        """
+        try:
+            online = f"{info['players']['active']} из {info['players']['total']}"
+        except TypeError:
+            online = "Оффлайн"
+        game = discord.Game(online)
+        try:
+            await client.change_presence(status=discord.Status.online, activity=game)
+        except websockets.exceptions.ConnectionClosedOK:
+            game = discord.Game("Обновляю информацию")
+            await client.change_presence(status=discord.Status.online, activity=game)
+
+    async def database_filling(self, sql_db: SqliteDataStorage):
+        """
+        Создание и заполнение базы данных
+        """
         for guild in self.guilds:  # для каждого сервера
             # создаём таблицы браков (для хранения данных о "браках" пользователей)
             sql_db.create_marriage_tabel(guild.name.strip().replace(' ', '_'))  # нельзя чтобы в названии был пробел
@@ -51,204 +169,6 @@ class MyClient(discord.Client):
                         sql_db.create_account(table, member.id)
                         print(f"{member} добавлен в базу данных (Таблица: {table} с ID:{member.id}")
                 continue
-            print("Run online activity check")
-            await self.starting_online_check()
-
-    async def on_message(self, ctx):
-        """Смотрим каждое сообщение в доступных каналах, выводим в консоль и обрабатываем"""
-        time = str(datetime.datetime.now().time())
-        message_history = f"{time[0:8]}|{ctx.guild}| {ctx.channel} | {ctx.author} |{ctx.content}\n"
-        if len(ctx.embeds) > 0:
-            for emb in ctx.embeds:
-                message_history += f"EMBED\nTitle:{emb.title}\nDescription:{emb.description}\nurl:{emb.url}\n"
-                for field in emb.fields:
-                    message_history += f"field:{field}\n"
-        if len(ctx.attachments) > 0:
-            for attachment in ctx.attachments:
-                message_history += f"\tВложение:{attachment.url}\n"
-        print(message_history)
-        with open('message_history.txt', 'a', encoding='utf-8') as file:
-            file.write(message_history)
-        channel = discord.Client.get_channel(self, ctx.channel.id)
-        message = ctx.content.split()
-        if channel.id in config.ADMIN_CHANNEL:  # channel id list
-            try:
-                if re.search(r"^[\d]{17}\b", message[0].split("/")[0].split("<")[0]):
-                    steam_id = message[0].strip()
-                    # steam_find_url = f'https://steamidfinder.com/lookup/{steam_id}/'
-                    await channel.send(embed=await gen_embedded_reply.steam_id_info(steam_id))
-
-                if re.search(r"^[Кк]ако[йв]\b", message[0]) and re.search(r"^[Оо]нлайн\b", message[1].replace('?', '')):
-                    await channel.send(embed=await gen_embedded_reply.online_info())
-
-                if re.search(r'^[Бб]устеры', message[0]):
-                    boosters = []
-                    for buster in ctx.author.guild.premium_subscribers:
-                        boosters.append(f"<@{buster.id}>\n")
-                    emb = discord.Embed()
-                    emb.add_field(
-                        name='Имя:',
-                        value=f"Сейчас бустят сервер:\n{''.join(boosters)}")
-                    await channel.send(embed=emb)
-                if re.search(r'[Сс]колько', message[0]) and re.search(r'админов', message[1]) and re.search('онлайн',                                                                                         message[2]):
-                    await channel.send(embed=await check_admin_online())
-            except IndexError:
-                pass
-
-        if channel.id in config.INFO_CHANNEL:
-            try:
-                if re.search(r"^[Ии]нфо", message[0]) and len(ctx.raw_mentions) == 1:
-                    target = ctx.author.guild.get_member(ctx.raw_mentions[0])
-                    user = discord.Client.get_user(self, target.id)
-                    emb = await gen_embedded_reply.user_info(target, user)
-                    await channel.send(embed=emb)
-            except IndexError:
-                pass
-
-        if channel.id in config.GAME_CHANNEL:  # channel id list
-            await message_handlers.game_message(ctx, channel, self)
-
-        if channel.id in config.DINO_CHANNEL:  # channel id list
-            try:
-                if re.search(r"^[Дд]ино\b", message[0]) and re.search(r"^[Ии]нфо\b", message[1]):
-                    emb = await gen_emb_for_theisle.database_check(message)
-                    await channel.send(embed=emb)
-                    emb = await gen_emb_for_theisle.dino_info(ctx, message)
-                    await channel.send(embed=emb)
-
-                elif re.search(r"^[Вв]ыдать\b", message[0]) and re.search(r"^[Дд]ино\b", message[1]):
-                    emb = await gen_emb_for_theisle.give_dino(message, channel)
-                    await channel.send(embed=emb)
-
-                elif re.search(r"^[Сс]писок\b", message[0]) and re.search(r"^[Дд]ино\b", message[1]):
-                    await gen_emb_for_theisle.dino_catalog(channel)
-            except IndexError:
-                pass
-        if channel.id == config.TEST_SERVER_CONFIG_CHANNEL or channel.id == config.SERVER_CONFIG_CHANNEL:
-            try:
-                if re.search(r'[Пп]рописать', message[0]) or re.search(r'[Сс]нять', message[0]):
-                    if role_access(ctx, config.TECHNIC_ROLE):
-                        await editing_configuration(channel, message)
-                    else:
-                        await channel.send(embed=await gen_embedded_reply.no_access())
-                elif re.search(r'[Пп]еренести', message[0]) and re.search(r'с[еэ]йвы', message[1]):
-                    if role_access(ctx, config.TECHNIC_ROLE):
-                        await channel.send('```fix\nНачинаю скачивание базы данных с основного сервера\n```')
-                        test_server = (config.test_host, config.test_port, config.test_login, config.test_password,
-                                       config.test_saves_directory)
-                        main_server = (config.main_host, config.main_port, config.main_login, config.main_password,
-                                       config.main_saves_directory)
-                        if download_server_saves(main_server):
-                            await channel.send('☑ *База данных основного сервера скопирована*')
-
-                        else:
-                            await channel.send('❌ *Ошибка. Не удалось скопировать базу данных основного сервера*')
-                            raise IndexError
-                        await channel.send('☑ *Загружаю базу данных на тестовый сервер*')
-                        if upload_server_saves(test_server):
-                            await channel.send('☑ *База данных основного сервера загружена на тестовый сервер*')
-                            await channel.send('```fix\n'
-                                               'Перенос базы данных завершен, можно запускать тест-сервер\n```')
-                        else:
-                            await channel.send('❌ *Ошибка. Не удалось загрузить базу данных на тестовый сервер*')
-                            await channel.send('```diff\nПеренос базы данных не удался\n```')
-                            raise IndexError
-            except IndexError:
-                pass
-        if re.search(r'^![Мм]ут', message[0]):
-            try:
-                if role_access(ctx, config.MODERATOR_ROLES):
-                    toxic = ctx.author.guild.get_member(ctx.raw_mentions[0])
-                    if toxic.bot:
-                        raise IndexError
-                    old_roles = [f'<@&{i.id}>' for i in toxic.roles[1:]]
-                    print(old_roles)
-                    toxic_role = discord.utils.get(ctx.author.guild.roles, id=config.TOXIC_ROLE)
-                    print(toxic)
-                    for i in toxic.roles[1:]:
-                        role = discord.utils.get(ctx.author.guild.roles, id=i.id)
-                        try:
-                            await toxic.remove_roles(role)
-                        except (discord.Forbidden, discord.HTTPException):
-                            continue
-                    await toxic.add_roles(toxic_role)
-                    emb = discord.Embed(title=f"{toxic} получает мут в дискорде {ctx.author.guild.name}", color=0xf6ff00)
-                    emb.add_field(
-                        name='Сняты роли:',
-                        value='\n'.join(old_roles))
-                    await channel.send(f'<@{toxic.id}> `Вы получите роль`<@&{toxic_role.id}>\n'
-                                       f'`которая не позволит Вам пользоваться чатами.\n'
-                                       f'Пожалуйста ознакомьтесь с`<#{config.RULES_CHANNEL}>', embed=emb)
-                else:
-                    await channel.send(embed=await gen_embedded_reply.no_access())
-            except IndexError:
-                pass
-
-    async def on_member_join(self, member):
-        join_time = datetime.datetime.now()
-        ban_time = datetime.timedelta(days=1)
-        if ban_time > join_time - member.created_at:
-            channel = discord.Client.get_channel(self, config.ADMIN_CHANNEL[1])
-            user = discord.Client.get_user(self, member.id)
-            emb = await gen_embedded_reply.user_info(member, user)
-            await channel.send(f'<@{member.id}> *это новенький акк которому менее суток*\n'
-                               f'*возможно стоит обратить внимание* 🍌 ', embed=emb)
-
-    async def starting_online_check(self):
-        while True:
-            try:
-                online = await server_info.bermuda_server_info()
-                await client.online_activity(online)
-                await asyncio.sleep(30)
-            except Exception as error:
-                print(error)
-                await asyncio.sleep(30)
-                continue
-
-    async def online_activity(self, info):
-        try:
-            online = f"{info['players']['active']} из {info['players']['total']}"
-        except TypeError:
-            online = "Оффлайн"
-        game = discord.Game(online)
-        try:
-            await client.change_presence(status=discord.Status.online, activity=game)
-        except websockets.exceptions.ConnectionClosedOK:
-            game = discord.Game("Обновляю информацию")
-            await client.change_presence(status=discord.Status.online, activity=game)
-
-    async def on_raw_message_delete(self, payload):
-        if payload.channel_id in config.ADMIN_CHANNEL:
-            channel = discord.Client.get_channel(self, payload.channel_id)
-            await channel.send(f"`А х*й ты чё тут удалишь!`\nЭто <#{payload.channel_id}>!!!\n"
-                               f"**{payload.cached_message.author}** отправлял сообщение:\n"
-                               f"{payload.cached_message.content}")
-            for emb in payload.cached_message.embeds:
-                await channel.send(embed=emb)
-            for attach in payload.cached_message.attachments:
-                await channel.send(attach.url)
-                await channel.send(attach.proxy_url)
-
-    # async def on_raw_message_edit(self, payload):
-    #     if payload.channel_id in config.ADMIN_CHANNEL:
-    #         channel = discord.Client.get_channel(self, payload.channel_id)
-    #         try:
-    #             author = payload.cached_message.author
-    #         except AttributeError:
-    #             author = ''
-    #         await channel.send(f"`А х*й ты чё тут исправишь просто так!`\nЭто <#{payload.channel_id}>!!!\n\n"
-    #                            f"**{author}** `отправлял сообщение:`\n\n"
-    #                            f"{payload.cached_message.content}")
-    #         await channel.send(f"\n`И исправил так:`\n{payload.data['content']}")
-
-
-def role_access(ctx, access_list) -> bool:
-    """Checking access member to command"""
-    for i in ctx.author.roles:
-        if i.id in access_list:
-            return True
-    else:
-        return False
 
 
 # RUN
