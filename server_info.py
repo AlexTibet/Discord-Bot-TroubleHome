@@ -8,6 +8,10 @@ from trouble_admins_dict import trouble_server_admins
 
 
 class Admin:
+    """
+    Администратор
+    Имеет идентификатор (SteamID), статус (онлайн/оффлайн), количество убийств и смертей
+    """
     def __init__(self, steam_id):
         self.steam_id = int(steam_id)
         self.activity = False
@@ -39,7 +43,12 @@ class Admin:
         return self.death
 
 
-async def check_admin_online():
+async def check_admin_online() -> discord.Embed:
+    """
+    Выясняем кто из администраторов онлайн на сервере.
+    Для этого скачиваем логи сервера, парсим, в созданые объекты админов записываем заходы/выходы/убийства смерти
+    Тех админов статус которых остался онлайн вписываем в объект Embed и возвращаем для дальнейшей отправки в чат
+    """
     await download_server_log()
     admins = {}
     for steam_id in trouble_server_admins.keys():
@@ -88,7 +97,12 @@ async def check_admin_online():
     return emb if len(online) > 0 else discord.Embed(title=f"На сервере нет админов", color=0xf6ff00)
 
 
-async def bermuda_server_info():
+async def bermuda_server_info() -> dict or None:
+    """
+    Информация о сервере
+    Делаем запрос на панель управления сервером, логинимся, получаем ответ
+    возвращаем словарь с информацией о онлайне сервера или None если не получили ответ
+    """
     session = requests.Session()
     data = {
         'action': 'signin',
@@ -104,6 +118,11 @@ async def bermuda_server_info():
 
 
 def bermuda_test_server_info():
+    """
+    Информация о тестовом сервере (В РАЗРАБОТКЕ, пока не работает)
+    Делаем запрос на панель управления тестовым сервером, логинимся, получаем ответ
+    возвращаем словарь с информацией о онлайне тестового сервера или None если не получили ответ
+    """
     session = requests.Session()
     data = {
         'email': config.g_portal_login,
@@ -119,6 +138,9 @@ def bermuda_test_server_info():
 
 
 def bermuda_test_server_start():
+    """
+    Команда на включение тестового сервере (В РАЗРАБОТКЕ, пока не работает)
+    """
     session = requests.Session()
     data = {
         'email': config.g_portal_login,
@@ -139,11 +161,3 @@ def bermuda_test_server_start():
     else:
         print(bermuda_start)
         return None
-
-
-if __name__ == '__main__':
-    otvet = bermuda_test_server_info()
-    print(otvet)
-    print(otvet['online'])
-    start = bermuda_test_server_start()
-    print(start)
