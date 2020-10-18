@@ -36,7 +36,8 @@ async def online_info():
 async def bite(ctx, message: str) -> discord.embeds:
     """Игра 'Кусь', случайно выбирается результат и цель укуса, каждому соответствует свой набор gif"""
     target, victim, gif_id = await game_logic.bite_logic(message)
-    emb = discord.Embed()
+    member_color = ctx.author.guild.get_member(ctx.author.id).color
+    emb = discord.Embed(color=member_color)
     gif_url = random.choice(game_config.GIF_KUS[gif_id])
     if target is not None:
         emb.add_field(
@@ -56,7 +57,8 @@ async def who_am_i(ctx) -> discord.embeds:
     """Игра 'Кто я?', случайно выбирается результат ответ"""
     responses = game_config.WHOAMI
     random.shuffle(responses)
-    emb = discord.Embed()
+    member_color = ctx.author.guild.get_member(ctx.author.id).color
+    emb = discord.Embed(color=member_color)
     emb.add_field(
         name='Кто ты?!',
         value=f"<@{ctx.author.id}> ты {random.choice(responses)}!")
@@ -94,7 +96,8 @@ async def hug(ctx, message):
     gif_list = game_config.GIF_HUG
     random.shuffle(gif_list)
     gif_url = random.choice(gif_list)
-    emb = discord.Embed()
+    member_color = ctx.author.guild.get_member(ctx.author.id).color
+    emb = discord.Embed(color=member_color)
     emb.add_field(
         name=f'Обнимашки',
         value=f"<@{ctx.author.id}> обнимает {message[1]}")
@@ -106,7 +109,8 @@ async def feed(ctx):
     gif_list = game_config.GIF_FEED
     random.shuffle(gif_list)
     gif_url = random.choice(gif_list)
-    emb = discord.Embed()
+    member_color = ctx.author.guild.get_member(ctx.author.id).color
+    emb = discord.Embed(color=member_color)
     emb.add_field(
         name=f'Ням ням',
         value=f"<@{ctx.author.id}> кормит <@{ctx.raw_mentions[0]}>")
@@ -118,7 +122,8 @@ async def kiss(ctx, message):
     gif_list = game_config.GIF_KISS
     random.shuffle(gif_list)
     gif_url = random.choice(game_config.GIF_KISS)
-    emb = discord.Embed()
+    member_color = ctx.author.guild.get_member(ctx.author.id).color
+    emb = discord.Embed(color=member_color)
     emb.add_field(
         name=f'Поцелуй',
         value=f"<@{ctx.author.id}> целует {message[1]}")
@@ -129,7 +134,8 @@ async def kiss(ctx, message):
 async def love(ctx, message):
     random.shuffle(game_config.GIF_LOVE)
     gif_url = random.choice(game_config.GIF_LOVE)
-    emb = discord.Embed()
+    member_color = ctx.author.guild.get_member(ctx.author.id).color
+    emb = discord.Embed(color=member_color)
     emb.add_field(
         name=f'Любовь',
         value=f"<@{ctx.author.id}> любит {message[1]}")
@@ -140,7 +146,8 @@ async def love(ctx, message):
 async def hit(ctx, message):
     random.shuffle(game_config.GIF_HIT)
     gif_url = random.choice(game_config.GIF_HIT)
-    emb = discord.Embed()
+    member_color = ctx.author.guild.get_member(ctx.author.id).color
+    emb = discord.Embed(color=member_color)
     emb.add_field(
         name=f'Удар!',
         value=f"<@{ctx.author.id}> бьёт {message[1]}")
@@ -151,7 +158,8 @@ async def hit(ctx, message):
 async def rest(ctx):
     random.shuffle(game_config.GIF_REST)
     gif_url = random.choice(game_config.GIF_REST)
-    emb = discord.Embed()
+    member_color = ctx.author.guild.get_member(ctx.author.id).color
+    emb = discord.Embed(color=member_color)
     emb.add_field(
         name=f'Лежать!',
         value=f"<@{ctx.raw_mentions[0]}> Лёг!")
@@ -162,7 +170,8 @@ async def rest(ctx):
 async def slap(ctx, message):
     random.shuffle(game_config.GIF_SLAP)
     gif_url = random.choice(game_config.GIF_SLAP)
-    emb = discord.Embed()
+    member_color = ctx.author.guild.get_member(ctx.author.id).color
+    emb = discord.Embed(color=member_color)
     emb.add_field(
         name=f'Шлёп!',
         value=f"<@{ctx.author.id}> шлёпает {message[1]}")
@@ -173,7 +182,8 @@ async def slap(ctx, message):
 async def poke(ctx, message):
     random.shuffle(game_config.GIF_POKE)
     gif_url = random.choice(game_config.GIF_POKE)
-    emb = discord.Embed()
+    member_color = ctx.author.guild.get_member(ctx.author.id).color
+    emb = discord.Embed(color=member_color)
     emb.add_field(
         name=f'Тык',
         value=f"<@{ctx.author.id}> тыкает {message[1]}")
@@ -184,7 +194,8 @@ async def poke(ctx, message):
 async def take_hand(ctx, message):
     random.shuffle(game_config.GIF_TAKEHAND)
     gif_url = random.choice(game_config.GIF_TAKEHAND)
-    emb = discord.Embed()
+    member_color = ctx.author.guild.get_member(ctx.author.id).color
+    emb = discord.Embed(color=member_color)
     emb.add_field(
         name=f'Взять за руку',
         value=f"<@{ctx.author.id}> берёт за руку {message[3]}")
@@ -195,7 +206,8 @@ async def take_hand(ctx, message):
 async def stroke(ctx, message):
     random.shuffle(game_config.GIF_STROKE)
     gif_url = random.choice(game_config.GIF_STROKE)
-    emb = discord.Embed()
+    member_color = ctx.author.guild.get_member(ctx.author.id).color
+    emb = discord.Embed(color=member_color)
     emb.add_field(
         name=f'Погладить',
         value=f"<@{ctx.author.id}> гладит {message[1]}")
@@ -205,7 +217,8 @@ async def stroke(ctx, message):
 
 async def sad(ctx):
     gif_url = random.choice(game_config.GIF_SAD)
-    emb = discord.Embed()
+    member_color = ctx.author.guild.get_member(ctx.author.id).color
+    emb = discord.Embed(color=member_color)
     emb.add_field(
         name=f'Печаль',
         value=f"<@{ctx.author.id}> грустит...")
@@ -216,7 +229,8 @@ async def sad(ctx):
 async def lick(ctx, message):
     random.shuffle(game_config.GIF_LICK)
     gif_url = random.choice(game_config.GIF_LICK)
-    emb = discord.Embed()
+    member_color = ctx.author.guild.get_member(ctx.author.id).color
+    emb = discord.Embed(color=member_color)
     emb.add_field(
         name=f'Лизь',
         value=f"<@{ctx.author.id}> облизывает {message[1]}")
@@ -225,7 +239,8 @@ async def lick(ctx, message):
 
 
 async def sex(ctx):
-    emb = discord.Embed()
+    member_color = ctx.author.guild.get_member(ctx.author.id).color
+    emb = discord.Embed(color=member_color)
     emb.add_field(
         name=f':white_check_mark: = Да.  :negative_squared_cross_mark: = Нет ',
         value=f'<@{ctx.raw_mentions[0]}> даёшь ли ты своё согласие на секс c <@{ctx.author.id}>?')
@@ -234,7 +249,7 @@ async def sex(ctx):
 
 async def sex_accept(husband, wife):
     gif_url = random.choice(game_config.GIF_SEX)
-    emb = discord.Embed()
+    emb = discord.Embed(color=0x000000)
     description = f"<@{husband}> занимается сексом с <@{wife}>" if husband != wife else f"<@{husband}> дрочит."
     emb.add_field(
         name=f'Секс',
@@ -246,7 +261,7 @@ async def sex_accept(husband, wife):
 async def sex_history(ctx, channel, whore=None):
     db = sql_db(config.db_name)
     if whore is None:
-        if channel.id in [726050381481902080, 718840575238864956]:
+        if channel.id in [726050381481902080, 718840575238864956, 593300230263406602]:
             history = db.get_marriage_accounts(f"marriage_{ctx.guild.name.strip().replace(' ', '_')}")
             if history is not None:
                 sex_count = {}
@@ -300,62 +315,138 @@ async def sex_history(ctx, channel, whore=None):
                 await channel.send("*Ничего не найдено*")
 
 
-async def marriage_history(ctx, channel):
+async def whore_list(ctx, channel):
     db = sql_db(config.db_name)
     history = db.get_marriage_accounts(f"marriage_{ctx.guild.name.strip().replace(' ', '_')}")
-    date_now = datetime.date.today()
-    marriages = {}
-    marriages_date = {}
-    marriages_history = {}
-    marriages_count = {}
-    for member in history:
-        if member['spouse'] is not None and member['spouse'] not in marriages.keys():
-            marriages[member['discord_id']] = member['spouse']
-            year, month, day = member["date_of_marriage"].split(':')
-            marriage_date = datetime.date(int(year), int(month), int(day))
-            marriage_days = date_now - marriage_date
-            marriages_date[member['discord_id']] = marriage_days.days
-        if member['marriage_count'] is not None and member['marriage_history'] is not None:
-            marriages_count[member['discord_id']] = member['marriage_count']
-            marriages_history[member['discord_id']] = member['marriage_history'].split()
-    text = ''
-    count = 0
-    for i in marriages.keys():
-        if int(i) == int(marriages[i]):
-            continue
-        else:
-            text += f"<@{i}> и <@{marriages[i]}> вместе уже **{marriages_date[i]}** дней :cupid:\n\n"
+    if history is not None:
+        sex_count = {}
+        sex_historyes = {}
+        parthers_count = []
+        for member in history:
+            if member['sex_count'] is not None and member['sex_history'] is not None:
+                parthers_count.append((len(member['sex_history'].split()), member['discord_id'],))
+                sex_count[member['discord_id']] = int(member['sex_count'])
+                sex_historyes[member['discord_id']] = member['sex_history'].split()
+        print(parthers_count)
+        parthers_count.sort(reverse=True)
+        print(parthers_count)
+        count = 0
+        for member_id in parthers_count:
             count += 1
-        if count == 10:
+            text = ''
+            member_partner_count = member_id[0]
+            member_id = member_id[1]
+            partners = ''
+            for partner in sex_historyes[member_id]:
+                name = f"<@{partner.split(':')[0]}>" if int(partner.split(':')[0]) != int(member_id) else "``Дрочит``"
+                partners += f"\n\t\t{name} - {' '.join(game_logic.ending_check(partner.split(':')[1]))}"
+            text += f"\n\n**{count}** место - `{member_partner_count}` партнёров\n💞 <@{member_id}> ``-> {sex_count[member_id]}``\nПартнёры:{partners}"
+            emb = discord.Embed(description=text, color=0xFA8072)
+            emb.set_footer(text=f"Прошмандовки {ctx.guild.name}", icon_url=ctx.guild.icon_url)
+            await channel.send(embed=emb)
+            emb.clear_fields()
+            if count == 5:
+                break
+
+
+async def marriage_history(ctx, channel, target=None):
+    if target is None:
+        db = sql_db(config.db_name)
+        history = db.get_marriage_accounts(f"marriage_{ctx.guild.name.strip().replace(' ', '_')}")
+        date_now = datetime.date.today()
+        marriages = {}
+        marriages_date = {}
+        marriages_history = {}
+        marriages_count = {}
+        for member in history:
+            if member['spouse'] is not None and member['spouse'] not in marriages.keys():
+                marriages[member['discord_id']] = member['spouse']
+                year, month, day = member["date_of_marriage"].split(':')
+                marriage_date = datetime.date(int(year), int(month), int(day))
+                marriage_days = date_now - marriage_date
+                marriages_date[member['discord_id']] = marriage_days.days
+            if member['marriage_count'] is not None and member['marriage_history'] is not None:
+                marriages_count[member['discord_id']] = member['marriage_count']
+                marriages_history[member['discord_id']] = member['marriage_history'].split()
+        text = ''
+        count = 0
+        for i in marriages.keys():
+            if int(i) == int(marriages[i]):
+                continue
+            else:
+                text += f"<@{i}> и <@{marriages[i]}> вместе уже **{marriages_date[i]}** дней :cupid:\n\n"
+                count += 1
+            if count == 10:
+                emb = discord.Embed(
+                    description=text,
+                    color=0xFA8072)
+                # if len(marriages_history[i]) > 1:
+                #     partners = ''
+                #     for partner in marriages_history[i]:
+                #         partners += f"<@{partner.split('_')[1]}> "
+                #     emb.add_field(
+                #         name='💔 Бывшие:',
+                #         value=f"{partners}")
+                emb.set_footer(text=f"Люди нашедшие друг друга на {ctx.guild.name}", icon_url=ctx.guild.icon_url)
+                await channel.send(embed=emb)
+                emb.clear_fields()
+                text = ''
+                count = 0
+        if len(text) > 1:
             emb = discord.Embed(
                 description=text,
                 color=0xFA8072)
-            # if len(marriages_history[i]) > 1:
-            #     partners = ''
-            #     for partner in marriages_history[i]:
-            #         partners += f"<@{partner.split('_')[1]}> "
-            #     emb.add_field(
-            #         name='💔 Бывшие:',
-            #         value=f"{partners}")
             emb.set_footer(text=f"Люди нашедшие друг друга на {ctx.guild.name}", icon_url=ctx.guild.icon_url)
             await channel.send(embed=emb)
             emb.clear_fields()
-            text = ''
-            count = 0
-    if len(text) > 1:
-        emb = discord.Embed(
-            description=text,
-            color=0xFA8072)
-        emb.set_footer(text=f"Люди нашедшие друг друга на {ctx.guild.name}", icon_url=ctx.guild.icon_url)
-        await channel.send(embed=emb)
-        emb.clear_fields()
+    else:
+        db = sql_db(config.db_name)
+        history = db.get_marriage_account(f"marriage_{ctx.guild.name.strip().replace(' ', '_')}", int(target))
+        if history is None:
+            await channel.send("Ничего не найдено")
+        else:
+            partners = ''
+            if history['marriage_count'] is not None and history['marriage_history'] is not None:
+                marriage_count = history['marriage_count']
+                marriage_historyes = history['marriage_history'].split()
+                if history['spouse'] is not None and int(marriage_historyes[-1].split('_')[1]) == int(history['spouse']):
+                    marriage_historyes.pop()
+                if len(marriage_historyes) > 0:
+                    for partner in marriage_historyes:
+                        name = f"<@{partner.split('_')[1]}>"
+                        year, month, day = partner.split('_')[0].split(':')
+                        partners += f"\n{name}  *({':'.join([day, month, year])})*"
+                else:
+                    partners = 'Нет'
+                try:
+                    year, month, day = history['date_of_marriage'].split(':')
+                    marriage_date = datetime.date(int(year), int(month), int(day))
+                    date_now = datetime.date.today()
+                    marriage_days = date_now - marriage_date
+                    marriage_days = marriage_days.days
+                except AttributeError:
+                    year, month, day, marriage_days = 0, 0, 0, 0
+                emb = discord.Embed(description=f"💞 <@{target}> браков`` ->  {marriage_count}``\n", color=0xFA8072)
+                emb.add_field(
+                    name='Сейчас:',
+                    value=f"в браке с <@{history['spouse']}> уже ***{marriage_days}*** дней"
+                    if history['spouse'] is not None else "Не в браке")
+                emb.add_field(
+                    name='Бывшие:',
+                    value=f"{partners}",
+                    inline=False)
+                emb.set_footer(text=f"История браков {ctx.guild.name}", icon_url=ctx.guild.icon_url)
+                await channel.send(embed=emb)
+            else:
+                await channel.send("*Ничего не найдено*")
 
 
 async def anger(ctx):
     gif_list = game_config.GIF_ANGER
     random.shuffle(gif_list)
     gif_url = random.choice(gif_list)
-    emb = discord.Embed()
+    member_color = ctx.author.guild.get_member(ctx.author.id).color
+    emb = discord.Embed(color=member_color)
     emb.add_field(
         name=f'Злость',
         value=f"<@{ctx.author.id}> злится")
@@ -369,7 +460,8 @@ async def smoke(ctx):
     else:
         random.shuffle(game_config.GIF_SMOKE)
         gif_url = random.choice(game_config.GIF_SMOKE)
-    emb = discord.Embed()
+    member_color = ctx.author.guild.get_member(ctx.author.id).color
+    emb = discord.Embed(color=member_color)
     if len(ctx.raw_mentions) > 0:
         paty = ''
         for i in ctx.raw_mentions:
@@ -389,7 +481,8 @@ async def hookah(ctx):
     print("КАЛЬЯН")
     random.shuffle(game_config.GIF_HOOKAH)
     gif_url = random.choice(game_config.GIF_HOOKAH)
-    emb = discord.Embed()
+    member_color = ctx.author.guild.get_member(ctx.author.id).color
+    emb = discord.Embed(color=member_color)
     if len(ctx.raw_mentions) > 0:
         paty = ''
         for i in ctx.raw_mentions:
@@ -408,7 +501,8 @@ async def hookah(ctx):
 async def dance(ctx):
     random.shuffle(game_config.GIF_DANCE)
     gif_url = random.choice(game_config.GIF_DANCE)
-    emb = discord.Embed()
+    member_color = ctx.author.guild.get_member(ctx.author.id).color
+    emb = discord.Embed(color=member_color)
     if len(ctx.raw_mentions) > 0:
         paty = ''
         for i in ctx.raw_mentions:
@@ -431,7 +525,8 @@ async def drink(ctx):
         random.shuffle(game_config.GIF_DRINK)
         gif_url = random.choice(game_config.GIF_DRINK)
     drink_emoji = random.choice(game_config.DRINK_EMOJI)
-    emb = discord.Embed()
+    member_color = ctx.author.guild.get_member(ctx.author.id).color
+    emb = discord.Embed(color=member_color)
     if len(ctx.raw_mentions) > 0:
         paty = ''
         for i in ctx.raw_mentions:
@@ -559,7 +654,7 @@ async def steam_id_info(steam_id):
         return 'Нельзя проверять слишком часто. Попробуйте через минутку.'
 
 
-async def user_info(target, user):
+async def user_info(target):
     emb = discord.Embed(title='Информация о пользователе:',
                         color=target.color)
     emb.add_field(
