@@ -905,3 +905,29 @@ GIF_REST = [
     'https://cdn.discordapp.com/attachments/581134474092347392/738742852800086067/QB1Kg9K.gif',
     'https://cdn.discordapp.com/attachments/581134474092347392/738742859200462878/RmHG.gif'
 ]
+
+YOU_SLEEP = [
+    'https://i.gifer.com/GLoc.gif',
+    'https://i.gifer.com/cSU.gif',
+    'https://i.gifer.com/F9KX.gif',
+    'https://i.gifer.com/PpeN.gif',
+    'https://i.gifer.com/9SFS.gif',
+    'https://i.gifer.com/7M1.gif',
+    'https://i.gifer.com/ARQA.gif',
+    'https://i.gifer.com/H52d.gif',
+    'https://i.gifer.com/ApCX.gif',
+    'https://i.gifer.com/cSU.gif',
+]
+
+I_SLEEP = [
+    'https://i.gifer.com/1Mv.gif',
+    'https://i.gifer.com/78mY.gif',
+    'https://i.gifer.com/IW0.gif',
+    'https://i.gifer.com/LoA1.gif',
+    'https://i.gifer.com/y9L.gif',
+    'https://i.gifer.com/H2I1.gif',
+    'https://i.gifer.com/Egxp.gif',
+    'https://i.gifer.com/CvW.gif',
+    'https://i.gifer.com/U4aA.gif',
+    'https://i.gifer.com/23S5.gif'
+]

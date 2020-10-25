@@ -16,6 +16,17 @@ async def no_access() -> discord.embeds:
     return emb
 
 
+async def banned_user(discord_id: int):
+    emb = discord.Embed(title=f'❌ БАН ❌', color=0xFF0000)
+    emb.add_field(
+        name=f'Ограничение доступа:',
+        value=f'<@{discord_id}>\n'
+              f'Причина: **{config.BAN_LIST[discord_id].split(":")[0].strip()}**\n'
+              f'Время бана: `{config.BAN_LIST[discord_id].split(":")[1].strip()}`')
+    emb.set_footer(text='Данная команда вам недоступна')
+    return emb
+
+
 async def online_info():
     info = await server_info.bermuda_server_info()
     if info is not None:
@@ -538,6 +549,23 @@ async def drink(ctx):
         emb.add_field(
             name=f'Бухать! <a:red_dance:593485736305623096>',
             value=f"<@{ctx.author.id}> бухает {drink_emoji}")
+    emb.set_image(url=gif_url)
+    return emb
+
+
+async def player_sleep(ctx):
+    if len(ctx.raw_mentions) == 0:
+        gif_list = game_config.I_SLEEP
+    else:
+        gif_list = game_config.YOU_SLEEP
+    random.shuffle(gif_list)
+    gif_url = random.choice(gif_list)
+    member_color = ctx.author.guild.get_member(ctx.author.id).color
+    emb = discord.Embed(color=member_color)
+    emb.add_field(
+        name=f'Сладких снов 😴',
+        value=f"<@{ctx.raw_mentions[0] if len(ctx.raw_mentions) > 0 else ctx.author.id}> пора спать"
+    )
     emb.set_image(url=gif_url)
     return emb
 

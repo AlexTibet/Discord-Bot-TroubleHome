@@ -29,7 +29,7 @@ class MyClient(discord.Client):
         sql_db = SqliteDataStorage(config.db_name)
         print("Connection to the database is complete.")
         # Добавление пользователей в базу данных
-        await self.database_filling(sql_db)
+        # await self.database_filling(sql_db)
         await self.starting_online_check()
         print("Run online activity check")
 
