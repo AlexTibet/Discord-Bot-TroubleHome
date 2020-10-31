@@ -172,7 +172,7 @@ async def game_message(ctx: discord.Message, channel: discord.TextChannel, bot: 
     message.append('-')
     message.append('-')
     message.append('-')
-    if re.search(r"^[Кк]усь\b", message[0]) and re.search(r"[\d]{18}", message[1]):
+    if re.search(r"^[Кк]усь\b", message[0]) and len(ctx.raw_mentions) > 0:
         await ban_handler(ctx, channel)
         await channel.send(embed=await gen_embedded_reply.bite(ctx, message))
 
@@ -180,58 +180,60 @@ async def game_message(ctx: discord.Message, channel: discord.TextChannel, bot: 
         await ban_handler(ctx, channel)
         await channel.send(embed=await gen_embedded_reply.who_am_i(ctx))
 
-    elif re.search(r"^[Шш]ипперить\b", message[0]) and re.search(r"[\d]{18}", message[1]) and re.search(
-            r"[\d]{18}", message[2]):
+    elif re.search(r"^[Шш]ипперить\b", message[0]) and len(ctx.raw_mentions) == 2:
         await ban_handler(ctx, channel)
         await channel.send(embed=await gen_embedded_reply.shipper(message))
-    elif re.search(r"^[Оо]бнять\b", message[0]) and re.search(r"[\d]{18}", message[1]):
+
+    elif re.search(r"^[Оо]бнять\b", message[0]) and len(ctx.raw_mentions) > 0:
         await ban_handler(ctx, channel)
         await channel.send(embed=await gen_embedded_reply.hug(ctx, message))
 
-    elif re.search(r"^[Пп]окормить\b", message[0]) and re.search(r"[\d]{18}", message[1]):
+    elif re.search(r"^[Тт]ереться\b", message[0]) and len(ctx.raw_mentions) > 0:
+        await ban_handler(ctx, channel)
+        await channel.send(embed=await gen_embedded_reply.cuddle(ctx))
+
+    elif re.search(r"^[Пп]окормить\b", message[0]) and len(ctx.raw_mentions) > 0:
         await ban_handler(ctx, channel)
         await channel.send(embed=await gen_embedded_reply.feed(ctx))
 
     elif (re.search(r"^[Пп]оцеловать\b", message[0]) or re.search(r"^[Зз]асосать\b", message[0]) or
-            re.search(r"^[Цц]еловать\b", message[0])) and re.search(r"[\d]{18}", message[1]):
+            re.search(r"^[Цц]еловать\b", message[0])) and len(ctx.raw_mentions) > 0:
         await ban_handler(ctx, channel)
         await channel.send(embed=await gen_embedded_reply.kiss(ctx, message))
 
-    elif (re.search(r"^[Лл]юбить\b", message[0]) or re.search(r"^[Лл]юблю\b", message[0])) and \
-            re.search(r"[\d]{18}", message[1]):
+    elif (re.search(r"^[Лл]юбить\b", message[0]) or re.search(r"^[Лл]юблю\b", message[0])) and len(ctx.raw_mentions) > 0:
         await ban_handler(ctx, channel)
         await channel.send(embed=await gen_embedded_reply.love(ctx, message))
 
-    elif re.search(r"^[Уу]дарить\b", message[0]) and re.search(r"[\d]{18}", message[1]):
+    elif re.search(r"^[Уу]дарить\b", message[0]) and len(ctx.raw_mentions) > 0:
         await ban_handler(ctx, channel)
         await channel.send(embed=await gen_embedded_reply.hit(ctx, message))
 
-    elif re.search(r"^[Лл]ежать\b", message[1]) and re.search(r"[\d]{18}", message[0]):
+    elif re.search(r"^[Лл]ежать\b", message[1]) and len(ctx.raw_mentions) > 0:
         await ban_handler(ctx, channel)
         await channel.send(embed=await gen_embedded_reply.rest(ctx))
 
-    elif (re.search(r"^[Шш]л[её]п\b", message[0]) or re.search(r"^[Шш]л[её]пнуть\b", message[0])) and re.search(
-            r"[\d]{18}", message[1]):
+    elif (re.search(r"^[Шш]л[её]п\b", message[0]) or re.search(r"^[Шш]л[её]пнуть\b", message[0])) \
+            and len(ctx.raw_mentions) > 0:
         await ban_handler(ctx, channel)
         await channel.send(embed=await gen_embedded_reply.slap(ctx, message))
 
-    elif (re.search(r"^[Тт]ык\b", message[0]) or re.search(r"^[Тт]ыкнуть\b", message[0])) and re.search(
-            r"[\d]{18}", message[1]):
+    elif (re.search(r"^[Тт]ык\b", message[0]) or re.search(r"^[Тт]ыкнуть\b", message[0])) and len(ctx.raw_mentions) > 0:
         await ban_handler(ctx, channel)
         await channel.send(embed=await gen_embedded_reply.poke(ctx, message))
 
     elif re.search(r"^[Вв]зять\b", message[0]) and re.search(r"за", message[1]) and re.search(
-            r"руку", message[2]) and re.search(r"[\d]{18}", message[3]):
+            r"руку", message[2]) and len(ctx.raw_mentions) > 0:
         await ban_handler(ctx, channel)
         await channel.send(embed=await gen_embedded_reply.take_hand(ctx, message))
 
-    elif (re.search(r"^[Гг]ладить\b", message[0]) or re.search(r"^[Пп]огладить\b", message[0])) and re.search(
-            r"[\d]{18}", message[1]):
+    elif (re.search(r"^[Гг]ладить\b", message[0]) or re.search(r"^[Пп]огладить\b", message[0])) \
+            and len(ctx.raw_mentions) > 0:
         await ban_handler(ctx, channel)
         await channel.send(embed=await gen_embedded_reply.stroke(ctx, message))
 
-    elif (re.search(r"^[Лл]изь\b", message[0]) or re.search(r"^[Лл]изнуть\b", message[0])) and re.search(
-            r"[\d]{18}", message[1]):
+    elif (re.search(r"^[Лл]изь\b", message[0]) or re.search(r"^[Лл]изнуть\b", message[0])) \
+            and len(ctx.raw_mentions) > 0:
         await ban_handler(ctx, channel)
         await channel.send(embed=await gen_embedded_reply.lick(ctx, message))
 
@@ -280,8 +282,8 @@ async def game_message(ctx: discord.Message, channel: discord.TextChannel, bot: 
         await ban_handler(ctx, channel)
         await channel.send(embed=await game_logic.divorce(ctx, bot))
 
-    elif (re.search(r"^[Сс]екс\b", message[0]) or re.search(r"^[Тт]рахнуть\b", message[0])) and re.search(
-            r"[\d]{18}", message[1]):
+    elif (re.search(r"^[Сс]екс\b", message[0]) or re.search(r"^[Тт]рахнуть\b", message[0])) \
+            and len(ctx.raw_mentions) > 0:
         await ban_handler(ctx, channel)
         marriage_msg = await channel.send(embed=await gen_embedded_reply.sex(ctx))
         await marriage_msg.add_reaction('✅')

@@ -346,6 +346,26 @@ GIF_HUG = [
     'https://media1.tenor.com/images/e9379393e44cfdb3b5544f236219fac0/tenor.gif'
 ]
 
+GIF_CUDDLE = [
+    'https://cdn.discordapp.com/attachments/771266347442765844/771279444126990346/image0.gif',
+    'https://cdn.discordapp.com/attachments/771266347442765844/771279444413382666/image1.gif',
+    'https://cdn.discordapp.com/attachments/771266347442765844/771279444891009034/image2.gif',
+    'https://cdn.discordapp.com/attachments/771266347442765844/771279445255782400/image3.gif',
+    'https://cdn.discordapp.com/attachments/771266347442765844/771279445855174656/image4.gif',
+    'https://cdn.discordapp.com/attachments/771266347442765844/771279446510403584/image5.gif',
+    'https://cdn.discordapp.com/attachments/771266347442765844/771279447277305876/image6.gif',
+    'https://cdn.discordapp.com/attachments/771266347442765844/771279447881154600/image7.gif',
+    'https://cdn.discordapp.com/attachments/771266347442765844/771279448786862080/image8.gif',
+    'https://cdn.discordapp.com/attachments/771266347442765844/771279449190170674/image9.gif',
+    'https://cdn.discordapp.com/attachments/771266347442765844/771279513568018432/image0.gif',
+    'https://cdn.discordapp.com/attachments/771266347442765844/771279513900417044/image1.gif',
+    'https://cdn.discordapp.com/attachments/771266347442765844/771279514311196692/image2.gif',
+    'https://cdn.discordapp.com/attachments/771266347442765844/771279514583433236/image3.gif',
+    'https://cdn.discordapp.com/attachments/771266347442765844/771279514952269884/image4.gif',
+    'https://cdn.discordapp.com/attachments/771266347442765844/771279515425964042/image5.gif',
+    'https://cdn.discordapp.com/attachments/771266347442765844/771279515674476565/image6.gif',
+]
+
 # покормить
 GIF_FEED = [
     'https://i.pinimg.com/originals/1f/0a/09/1f0a09551942879a736ac59b3615bf40.gif',

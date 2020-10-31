@@ -47,8 +47,7 @@ async def online_info():
 async def bite(ctx, message: str) -> discord.embeds:
     """Игра 'Кусь', случайно выбирается результат и цель укуса, каждому соответствует свой набор gif"""
     target, victim, gif_id = await game_logic.bite_logic(message)
-    member_color = ctx.author.guild.get_member(ctx.author.id).color
-    emb = discord.Embed(color=member_color)
+    emb = discord.Embed(color=ctx.author.color)
     gif_url = random.choice(game_config.GIF_KUS[gif_id])
     if target is not None:
         emb.add_field(
@@ -68,8 +67,7 @@ async def who_am_i(ctx) -> discord.embeds:
     """Игра 'Кто я?', случайно выбирается результат ответ"""
     responses = game_config.WHOAMI
     random.shuffle(responses)
-    member_color = ctx.author.guild.get_member(ctx.author.id).color
-    emb = discord.Embed(color=member_color)
+    emb = discord.Embed(color=ctx.author.color)
     emb.add_field(
         name='Кто ты?!',
         value=f"<@{ctx.author.id}> ты {random.choice(responses)}!")
@@ -107,11 +105,19 @@ async def hug(ctx, message):
     gif_list = game_config.GIF_HUG
     random.shuffle(gif_list)
     gif_url = random.choice(gif_list)
-    member_color = ctx.author.guild.get_member(ctx.author.id).color
-    emb = discord.Embed(color=member_color)
+    emb = discord.Embed(color=ctx.author.color)
     emb.add_field(
         name=f'Обнимашки',
         value=f"<@{ctx.author.id}> обнимает {message[1]}")
+    emb.set_image(url=gif_url)
+    return emb
+
+
+async def cuddle(ctx):
+    gif_list = game_config.GIF_CUDDLE
+    random.shuffle(gif_list)
+    gif_url = random.choice(gif_list)
+    emb = discord.Embed(description=f"<@{ctx.author.id}> трётся об <@{ctx.raw_mentions[0]}>", color=ctx.author.color)
     emb.set_image(url=gif_url)
     return emb
 
@@ -120,8 +126,7 @@ async def feed(ctx):
     gif_list = game_config.GIF_FEED
     random.shuffle(gif_list)
     gif_url = random.choice(gif_list)
-    member_color = ctx.author.guild.get_member(ctx.author.id).color
-    emb = discord.Embed(color=member_color)
+    emb = discord.Embed(color=ctx.author.color)
     emb.add_field(
         name=f'Ням ням',
         value=f"<@{ctx.author.id}> кормит <@{ctx.raw_mentions[0]}>")
@@ -133,8 +138,7 @@ async def kiss(ctx, message):
     gif_list = game_config.GIF_KISS
     random.shuffle(gif_list)
     gif_url = random.choice(game_config.GIF_KISS)
-    member_color = ctx.author.guild.get_member(ctx.author.id).color
-    emb = discord.Embed(color=member_color)
+    emb = discord.Embed(color=ctx.author.color)
     emb.add_field(
         name=f'Поцелуй',
         value=f"<@{ctx.author.id}> целует {message[1]}")
@@ -145,8 +149,7 @@ async def kiss(ctx, message):
 async def love(ctx, message):
     random.shuffle(game_config.GIF_LOVE)
     gif_url = random.choice(game_config.GIF_LOVE)
-    member_color = ctx.author.guild.get_member(ctx.author.id).color
-    emb = discord.Embed(color=member_color)
+    emb = discord.Embed(color=ctx.author.color)
     emb.add_field(
         name=f'Любовь',
         value=f"<@{ctx.author.id}> любит {message[1]}")
@@ -157,8 +160,7 @@ async def love(ctx, message):
 async def hit(ctx, message):
     random.shuffle(game_config.GIF_HIT)
     gif_url = random.choice(game_config.GIF_HIT)
-    member_color = ctx.author.guild.get_member(ctx.author.id).color
-    emb = discord.Embed(color=member_color)
+    emb = discord.Embed(color=ctx.author.color)
     emb.add_field(
         name=f'Удар!',
         value=f"<@{ctx.author.id}> бьёт {message[1]}")
@@ -169,8 +171,7 @@ async def hit(ctx, message):
 async def rest(ctx):
     random.shuffle(game_config.GIF_REST)
     gif_url = random.choice(game_config.GIF_REST)
-    member_color = ctx.author.guild.get_member(ctx.author.id).color
-    emb = discord.Embed(color=member_color)
+    emb = discord.Embed(color=ctx.author.color)
     emb.add_field(
         name=f'Лежать!',
         value=f"<@{ctx.raw_mentions[0]}> Лёг!")
@@ -181,8 +182,7 @@ async def rest(ctx):
 async def slap(ctx, message):
     random.shuffle(game_config.GIF_SLAP)
     gif_url = random.choice(game_config.GIF_SLAP)
-    member_color = ctx.author.guild.get_member(ctx.author.id).color
-    emb = discord.Embed(color=member_color)
+    emb = discord.Embed(color=ctx.author.color)
     emb.add_field(
         name=f'Шлёп!',
         value=f"<@{ctx.author.id}> шлёпает {message[1]}")
@@ -193,8 +193,7 @@ async def slap(ctx, message):
 async def poke(ctx, message):
     random.shuffle(game_config.GIF_POKE)
     gif_url = random.choice(game_config.GIF_POKE)
-    member_color = ctx.author.guild.get_member(ctx.author.id).color
-    emb = discord.Embed(color=member_color)
+    emb = discord.Embed(color=ctx.author.color)
     emb.add_field(
         name=f'Тык',
         value=f"<@{ctx.author.id}> тыкает {message[1]}")
@@ -205,8 +204,7 @@ async def poke(ctx, message):
 async def take_hand(ctx, message):
     random.shuffle(game_config.GIF_TAKEHAND)
     gif_url = random.choice(game_config.GIF_TAKEHAND)
-    member_color = ctx.author.guild.get_member(ctx.author.id).color
-    emb = discord.Embed(color=member_color)
+    emb = discord.Embed(color=ctx.author.color)
     emb.add_field(
         name=f'Взять за руку',
         value=f"<@{ctx.author.id}> берёт за руку {message[3]}")
@@ -217,8 +215,7 @@ async def take_hand(ctx, message):
 async def stroke(ctx, message):
     random.shuffle(game_config.GIF_STROKE)
     gif_url = random.choice(game_config.GIF_STROKE)
-    member_color = ctx.author.guild.get_member(ctx.author.id).color
-    emb = discord.Embed(color=member_color)
+    emb = discord.Embed(color=ctx.author.color)
     emb.add_field(
         name=f'Погладить',
         value=f"<@{ctx.author.id}> гладит {message[1]}")
@@ -228,8 +225,7 @@ async def stroke(ctx, message):
 
 async def sad(ctx):
     gif_url = random.choice(game_config.GIF_SAD)
-    member_color = ctx.author.guild.get_member(ctx.author.id).color
-    emb = discord.Embed(color=member_color)
+    emb = discord.Embed(color=ctx.author.color)
     emb.add_field(
         name=f'Печаль',
         value=f"<@{ctx.author.id}> грустит...")
@@ -240,8 +236,7 @@ async def sad(ctx):
 async def lick(ctx, message):
     random.shuffle(game_config.GIF_LICK)
     gif_url = random.choice(game_config.GIF_LICK)
-    member_color = ctx.author.guild.get_member(ctx.author.id).color
-    emb = discord.Embed(color=member_color)
+    emb = discord.Embed(color=ctx.author.color)
     emb.add_field(
         name=f'Лизь',
         value=f"<@{ctx.author.id}> облизывает {message[1]}")
@@ -250,8 +245,7 @@ async def lick(ctx, message):
 
 
 async def sex(ctx):
-    member_color = ctx.author.guild.get_member(ctx.author.id).color
-    emb = discord.Embed(color=member_color)
+    emb = discord.Embed(color=ctx.author.color)
     emb.add_field(
         name=f':white_check_mark: = Да.  :negative_squared_cross_mark: = Нет ',
         value=f'<@{ctx.raw_mentions[0]}> даёшь ли ты своё согласие на секс c <@{ctx.author.id}>?')
@@ -456,8 +450,7 @@ async def anger(ctx):
     gif_list = game_config.GIF_ANGER
     random.shuffle(gif_list)
     gif_url = random.choice(gif_list)
-    member_color = ctx.author.guild.get_member(ctx.author.id).color
-    emb = discord.Embed(color=member_color)
+    emb = discord.Embed(color=ctx.author.color)
     emb.add_field(
         name=f'Злость',
         value=f"<@{ctx.author.id}> злится")
@@ -471,8 +464,7 @@ async def smoke(ctx):
     else:
         random.shuffle(game_config.GIF_SMOKE)
         gif_url = random.choice(game_config.GIF_SMOKE)
-    member_color = ctx.author.guild.get_member(ctx.author.id).color
-    emb = discord.Embed(color=member_color)
+    emb = discord.Embed(color=ctx.author.color)
     if len(ctx.raw_mentions) > 0:
         paty = ''
         for i in ctx.raw_mentions:
@@ -492,8 +484,7 @@ async def hookah(ctx):
     print("КАЛЬЯН")
     random.shuffle(game_config.GIF_HOOKAH)
     gif_url = random.choice(game_config.GIF_HOOKAH)
-    member_color = ctx.author.guild.get_member(ctx.author.id).color
-    emb = discord.Embed(color=member_color)
+    emb = discord.Embed(color=ctx.author.color)
     if len(ctx.raw_mentions) > 0:
         paty = ''
         for i in ctx.raw_mentions:
@@ -512,8 +503,7 @@ async def hookah(ctx):
 async def dance(ctx):
     random.shuffle(game_config.GIF_DANCE)
     gif_url = random.choice(game_config.GIF_DANCE)
-    member_color = ctx.author.guild.get_member(ctx.author.id).color
-    emb = discord.Embed(color=member_color)
+    emb = discord.Embed(color=ctx.author.color)
     if len(ctx.raw_mentions) > 0:
         paty = ''
         for i in ctx.raw_mentions:
@@ -536,8 +526,7 @@ async def drink(ctx):
         random.shuffle(game_config.GIF_DRINK)
         gif_url = random.choice(game_config.GIF_DRINK)
     drink_emoji = random.choice(game_config.DRINK_EMOJI)
-    member_color = ctx.author.guild.get_member(ctx.author.id).color
-    emb = discord.Embed(color=member_color)
+    emb = discord.Embed(color=ctx.author.color)
     if len(ctx.raw_mentions) > 0:
         paty = ''
         for i in ctx.raw_mentions:
@@ -560,8 +549,7 @@ async def player_sleep(ctx):
         gif_list = game_config.YOU_SLEEP
     random.shuffle(gif_list)
     gif_url = random.choice(gif_list)
-    member_color = ctx.author.guild.get_member(ctx.author.id).color
-    emb = discord.Embed(color=member_color)
+    emb = discord.Embed(color=ctx.author.color)
     emb.add_field(
         name=f'Сладких снов 😴',
         value=f"<@{ctx.raw_mentions[0] if len(ctx.raw_mentions) > 0 else ctx.author.id}> пора спать"
