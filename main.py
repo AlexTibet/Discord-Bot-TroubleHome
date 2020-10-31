@@ -59,7 +59,7 @@ class MyClient(discord.Client):
         if channel.id in config.DINO_CHANNEL:  # только для серверов The Isle
             await message_handlers.dino_from_the_isle_message(ctx, channel)
 
-        if channel.id in config.PROPOPOSITION_CHANNEl:
+        if channel.id in config.PROPOPOSITION_CHANNEL:
             await ctx.add_reaction('<a:6093_Animated_Checkmark:653294316134989834>')
             await ctx.add_reaction('<a:1603_Animated_Cross:653294299642855453>')
 
