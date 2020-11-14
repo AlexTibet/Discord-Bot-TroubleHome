@@ -4,7 +4,7 @@ from config import \
     main_host, main_port, main_login, main_password, main_logs_directory
 import datetime
 import json
-from os import path
+from os import path, mkdir
 
 
 async def download_server_log() -> bool:
@@ -77,6 +77,43 @@ def download_server_saves(server: tuple) -> bool:
                 ftp.retrbinary('RETR ' + 'SERVER_Rival_Shores_WorldItems.sav', f.write)
 
             return True
+        except FileNotFoundError:
+            return False
+
+
+def backup_server_data(server: tuple) -> bool:
+    """
+
+    :param server:
+    :return:
+    """
+    host, port, login, password, directory = server
+    with FTP() as ftp:
+        ftp.connect(host, port)
+        ftp.login(login, password)
+        ftp.cwd(directory)
+        time = datetime.datetime.now()
+        backup_dir = f"{path.dirname(__file__)}/server_saves/backups/{time.date()}_{time.hour}-{time.minute}"
+        try:
+            mkdir(backup_dir)
+        except OSError:
+            print(f'Не удалось создать дирректорию {backup_dir}')
+            return False
+        try:
+            with open(f'{backup_dir}/SERVER_Rival_Shores_DeathHistory.sav', 'wb') as f:
+                ftp.retrbinary('RETR ' + 'SERVER_Rival_Shores_DeathHistory.sav', f.write)
+
+            with open(f'{backup_dir}/SERVER_Rival_Shores_Entities.sav', 'wb') as f:
+                ftp.retrbinary('RETR ' + 'SERVER_Rival_Shores_Entities.sav', f.write)
+
+            with open(f'{backup_dir}/SERVER_Rival_Shores_PlayerPunishments.sav', 'wb') as f:
+                ftp.retrbinary('RETR ' + 'SERVER_Rival_Shores_PlayerPunishments.sav', f.write)
+
+            with open(f'{backup_dir}/SERVER_Rival_Shores_UserProfiles.sav', 'wb') as f:
+                ftp.retrbinary('RETR ' + 'SERVER_Rival_Shores_UserProfiles.sav', f.write)
+
+            return True
+
         except FileNotFoundError:
             return False
 

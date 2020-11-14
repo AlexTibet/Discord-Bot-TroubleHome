@@ -3,8 +3,9 @@ import config
 import discord
 import re
 import io
-from finde_and_download import download_server_log
+from finde_and_download import download_server_log, backup_server_data
 from trouble_admins_dict import trouble_server_admins
+import time
 
 
 class Admin:
@@ -41,6 +42,35 @@ class Admin:
 
     def get_death_count(self):
         return self.death
+
+
+class AutoBackup:
+    """
+    Класс автоматического резервного копирования базы данных игрового сервера
+    """
+    def __init__(self):
+        self._server = (
+            config.main_host,
+            config.main_port,
+            config.main_login,
+            config.main_password,
+            config.main_saves_directory
+        )
+
+    def _auto_backup_server_data(self):
+        return backup_server_data(self._server)
+
+    def run(self):
+        while True:
+            try:
+                if self._auto_backup_server_data():
+                    time.sleep(7200)
+                else:
+                    raise Exception('Не удалось скачать файлы')
+            except Exception as error:
+                print(error)
+                time.sleep(600)
+                continue
 
 
 async def check_admin_online() -> discord.Embed:

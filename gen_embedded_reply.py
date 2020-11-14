@@ -117,7 +117,7 @@ async def cuddle(ctx):
     gif_list = game_config.GIF_CUDDLE
     random.shuffle(gif_list)
     gif_url = random.choice(gif_list)
-    emb = discord.Embed(description=f"<@{ctx.author.id}> трётся об <@{ctx.raw_mentions[0]}>", color=ctx.author.color)
+    emb = discord.Embed(description=f"<@{ctx.author.id}> трётся об {' '.join(ctx.content.split()[1:-1])} <@{ctx.raw_mentions[0]}>", color=ctx.author.color)
     emb.set_image(url=gif_url)
     return emb
 
@@ -680,6 +680,7 @@ async def user_info(target):
         name='Имя на сервере:',
         value=target.nick if not 'None' else target.name)
     status = []
+    print(str(target.mobile_status))
     if str(target.mobile_status) != 'offline':
         status.append('Mobile')
     if str(target.desktop_status) != 'offline':
@@ -688,7 +689,7 @@ async def user_info(target):
         status.append('Web')
     emb.add_field(
         name='Активность:',
-        value=f"{target.status} {' & '.join(status)}\n{target.activity}" if len(status) >= 1 else 'Offline',
+        value=f"{target.status} {' & '.join(status)}" if len(status) >= 1 else f'Offline',
         inline=False)
     emb.add_field(
         name=f'Подключился к {target.guild.name}:',

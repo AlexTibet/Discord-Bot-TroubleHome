@@ -81,6 +81,7 @@ async def moderators_message(ctx: discord.Message, channel: discord.TextChannel)
         if role_access(ctx, config.MODERATOR_ROLES):
             toxic = ctx.author.guild.get_member(ctx.raw_mentions[0])
             if toxic.bot:   # Невозможно снять роли с бота, поэтому выдать мут боту не получится
+                await channel.send('**Нельзя дать мут боту**')
                 raise IndexError
             old_roles = [f'<@&{i.id}>' for i in toxic.roles[1:]]
             toxic_role = discord.utils.get(ctx.author.guild.roles, id=config.TOXIC_ROLE)
@@ -371,8 +372,7 @@ async def user_info_message(ctx: discord.Message, channel: discord.TextChannel, 
     message = ctx.content.split()
     if re.search(r"^[Ии]нфо", message[0]) and len(ctx.raw_mentions) == 1:
         target = ctx.author.guild.get_member(ctx.raw_mentions[0])
-        user = discord.Client.get_user(bot, target.id)
-        emb = await gen_embedded_reply.user_info(target, user)
+        emb = await gen_embedded_reply.user_info(target)
         await channel.send(embed=emb)
 
 

@@ -1,9 +1,8 @@
 import asyncio
 import discord
 import datetime
-import re
 import websockets
-
+from threading import Thread
 from datastorage import SqliteDataStorage
 import message_handlers
 import gen_embedded_reply
@@ -26,7 +25,7 @@ class MyClient(discord.Client):
             print(f"Bot run on server '{self.guilds[i].name}' with serverID = {self.guilds[i].id},"
                   f" with {self.guilds[i].member_count} users")
         print("Connecting to database...")
-        sql_db = SqliteDataStorage(config.db_name)
+        # sql_db = SqliteDataStorage(config.db_name)
         print("Connection to the database is complete.")
         # Добавление пользователей в базу данных
         # await self.database_filling(sql_db)
@@ -148,33 +147,40 @@ class MyClient(discord.Client):
             game = discord.Game("Обновляю информацию")
             await client.change_presence(status=discord.Status.online, activity=game)
 
-    async def database_filling(self, sql_db: SqliteDataStorage):
-        """
-        Создание и заполнение базы данных
-        """
-        for guild in self.guilds:  # для каждого сервера
-            # создаём таблицы браков (для хранения данных о "браках" пользователей)
-            sql_db.create_marriage_tabel(guild.name.strip().replace(' ', '_'))  # нельзя чтобы в названии был пробел
-            table = None
-            if re.search(config.BoB_server_name, guild.name):
-                table = "BoB_Users"
-            if re.search(config.TheIsle_server_name, guild.name):
-                table = "TheIsle_Users"
-            if table is not None:
-                for member in guild.members:  # для каждого участника сервера
-                    member_status = False
-                    accounts = sql_db.get_accounts(table)
-                    for account in accounts:
-                        if account["discord_id"] == member.id:
-                            print(f"{member} уже есть в базе данных (Таблица: {table} ID:{member.id})")
-                            member_status = True
-                            break
-                    if member_status is not True and table is not None:
-                        sql_db.create_account(table, member.id)
-                        print(f"{member} добавлен в базу данных (Таблица: {table} с ID:{member.id}")
-                continue
+    # async def database_filling(self, sql_db: SqliteDataStorage):
+    #     """
+    #     Создание и заполнение базы данных
+    #     """
+    #     for guild in self.guilds:  # для каждого сервера
+    #         # создаём таблицы браков (для хранения данных о "браках" пользователей)
+    #         sql_db.create_marriage_tabel(guild.name.strip().replace(' ', '_'))  # нельзя чтобы в названии был пробел
+    #         table = None
+    #         if re.search(config.BoB_server_name, guild.name):
+    #             table = "BoB_Users"
+    #         if re.search(config.TheIsle_server_name, guild.name):
+    #             table = "TheIsle_Users"
+    #         if table is not None:
+    #             for member in guild.members:  # для каждого участника сервера
+    #                 member_status = False
+    #                 accounts = sql_db.get_accounts(table)
+    #                 for account in accounts:
+    #                     if account["discord_id"] == member.id:
+    #                         print(f"{member} уже есть в базе данных (Таблица: {table} ID:{member.id})")
+    #                         member_status = True
+    #                         break
+    #                 if member_status is not True and table is not None:
+    #                     sql_db.create_account(table, member.id)
+    #                     print(f"{member} добавлен в базу данных (Таблица: {table} с ID:{member.id}")
+    #             continue
 
 
 # RUN
-client = MyClient()
-client.run(config.TOKEN)
+if __name__ == '__main__':
+    intents = discord.Intents.default()
+    intents.members = True
+    client = MyClient(intents=intents)
+    backup = server_info.AutoBackup()
+    bot = Thread(target=client.run, args=(config.TOKEN,), name='Trouble_Home_Bot')
+    auto_backup = Thread(target=backup.run, name='auto_backup')
+    bot.start()
+    # auto_backup.start()
