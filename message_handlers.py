@@ -7,7 +7,6 @@ from server_info import check_admin_online
 import config
 from server_config_editor import editing_configuration
 from finde_and_download import download_server_saves, upload_server_saves
-import gen_emb_for_theisle
 
 
 def role_access(ctx: discord.Message, access_list: list) -> True or False:
@@ -62,7 +61,7 @@ async def message_logging(ctx: discord.Message):
     if len(ctx.attachments) > 0:
         for attachment in ctx.attachments:
             message_history += f"\tВложение:{attachment.url}\n"
-    print(message_history)
+    # print(message_history)
     with open('message_history.txt', 'a', encoding='utf-8') as file:
         file.write(message_history)
 
@@ -187,7 +186,7 @@ async def game_message(ctx: discord.Message, channel: discord.TextChannel, bot: 
 
     elif re.search(r"^[Оо]бнять\b", message[0]) and len(ctx.raw_mentions) > 0:
         await ban_handler(ctx, channel)
-        await channel.send(embed=await gen_embedded_reply.hug(ctx, message))
+        await channel.send(embed=await gen_embedded_reply.hug(ctx))
 
     elif re.search(r"^[Тт]ереться\b", message[0]) and len(ctx.raw_mentions) > 0:
         await ban_handler(ctx, channel)
@@ -200,15 +199,15 @@ async def game_message(ctx: discord.Message, channel: discord.TextChannel, bot: 
     elif (re.search(r"^[Пп]оцеловать\b", message[0]) or re.search(r"^[Зз]асосать\b", message[0]) or
             re.search(r"^[Цц]еловать\b", message[0])) and len(ctx.raw_mentions) > 0:
         await ban_handler(ctx, channel)
-        await channel.send(embed=await gen_embedded_reply.kiss(ctx, message))
+        await channel.send(embed=await gen_embedded_reply.kiss(ctx))
 
     elif (re.search(r"^[Лл]юбить\b", message[0]) or re.search(r"^[Лл]юблю\b", message[0])) and len(ctx.raw_mentions) > 0:
         await ban_handler(ctx, channel)
-        await channel.send(embed=await gen_embedded_reply.love(ctx, message))
+        await channel.send(embed=await gen_embedded_reply.love(ctx))
 
     elif re.search(r"^[Уу]дарить\b", message[0]) and len(ctx.raw_mentions) > 0:
         await ban_handler(ctx, channel)
-        await channel.send(embed=await gen_embedded_reply.hit(ctx, message))
+        await channel.send(embed=await gen_embedded_reply.hit(ctx))
 
     elif re.search(r"^[Лл]ежать\b", message[1]) and len(ctx.raw_mentions) > 0:
         await ban_handler(ctx, channel)
@@ -217,26 +216,26 @@ async def game_message(ctx: discord.Message, channel: discord.TextChannel, bot: 
     elif (re.search(r"^[Шш]л[её]п\b", message[0]) or re.search(r"^[Шш]л[её]пнуть\b", message[0])) \
             and len(ctx.raw_mentions) > 0:
         await ban_handler(ctx, channel)
-        await channel.send(embed=await gen_embedded_reply.slap(ctx, message))
+        await channel.send(embed=await gen_embedded_reply.slap(ctx))
 
     elif (re.search(r"^[Тт]ык\b", message[0]) or re.search(r"^[Тт]ыкнуть\b", message[0])) and len(ctx.raw_mentions) > 0:
         await ban_handler(ctx, channel)
-        await channel.send(embed=await gen_embedded_reply.poke(ctx, message))
+        await channel.send(embed=await gen_embedded_reply.poke(ctx))
 
     elif re.search(r"^[Вв]зять\b", message[0]) and re.search(r"за", message[1]) and re.search(
             r"руку", message[2]) and len(ctx.raw_mentions) > 0:
         await ban_handler(ctx, channel)
-        await channel.send(embed=await gen_embedded_reply.take_hand(ctx, message))
+        await channel.send(embed=await gen_embedded_reply.take_hand(ctx))
 
     elif (re.search(r"^[Гг]ладить\b", message[0]) or re.search(r"^[Пп]огладить\b", message[0])) \
             and len(ctx.raw_mentions) > 0:
         await ban_handler(ctx, channel)
-        await channel.send(embed=await gen_embedded_reply.stroke(ctx, message))
+        await channel.send(embed=await gen_embedded_reply.stroke(ctx))
 
     elif (re.search(r"^[Лл]изь\b", message[0]) or re.search(r"^[Лл]изнуть\b", message[0])) \
             and len(ctx.raw_mentions) > 0:
         await ban_handler(ctx, channel)
-        await channel.send(embed=await gen_embedded_reply.lick(ctx, message))
+        await channel.send(embed=await gen_embedded_reply.lick(ctx))
 
     elif re.search(r"^[Гг]русть\b", message[0]) or re.search(r"^[Пп]ечаль\b", message[0]):
         await ban_handler(ctx, channel)
@@ -397,19 +396,25 @@ async def server_config_message(ctx: discord.Message, channel: discord.TextChann
             await channel.send(embed=await gen_embedded_reply.no_access())
     elif re.search(r'[Пп]еренести', message[0]) and re.search(r'с[еэ]йвы', message[1]):
         if role_access(ctx, config.TECHNIC_ROLE):
-            await channel.send('```fix\nНачинаю скачивание базы данных с основного сервера\n```')
-            test_server = (config.test_host, config.test_port, config.test_login, config.test_password,
-                           config.test_saves_directory)
-            main_server = (config.main_host, config.main_port, config.main_login, config.main_password,
-                           config.main_saves_directory)
-            if download_server_saves(main_server):
-                await channel.send('☑ *База данных основного сервера скопирована*')
+            if len(message) > 2 and re.search(r'[Аа]п', message[2]):
+                server_name = 'Ancestral_Plains'
+                main_server = (server_name, config.ap_host, config.ap_port, config.ap_login, config.ap_password,
+                               config.ap_saves_directory)
             else:
-                await channel.send('❌ *Ошибка. Не удалось скопировать базу данных основного сервера*')
+                server_name = 'Rival_Shores'
+                main_server = (server_name, config.main_host, config.main_port, config.main_login, config.main_password,
+                               config.main_saves_directory)
+            await channel.send(f'```fix\nНачинаю скачивание базы данных с сервера {server_name}\n```')
+            test_server = (server_name, config.test_host, config.test_port, config.test_login, config.test_password,
+                           config.test_saves_directory)
+            if download_server_saves(main_server):
+                await channel.send(f'☑ *База данных сервера {server_name} скопирована*')
+            else:
+                await channel.send(f'❌ *Ошибка. Не удалось скопировать базу данных сервера {server_name}*')
                 raise IndexError    # Прерываем выполнение функции
             await channel.send('☑ *Загружаю базу данных на тестовый сервер*')
             if upload_server_saves(test_server):
-                await channel.send('☑ *База данных основного сервера загружена на тестовый сервер*')
+                await channel.send(f'☑ *База данных сервера {server_name} загружена на тестовый сервер*')
                 await channel.send('```fix\n'
                                    'Перенос базы данных завершен, можно запускать тест-сервер\n```')
             else:
@@ -417,33 +422,3 @@ async def server_config_message(ctx: discord.Message, channel: discord.TextChann
                 await channel.send('```diff\nПеренос базы данных не удался\n```')
                 raise IndexError    # Прерываем выполнение функции
 
-
-@command_handler
-async def dino_from_the_isle_message(ctx: discord.Message, channel: discord.TextChannel):
-    """
-    Обработка сообщения на наличие команд редактирования базы данных игрового сервере (!только для серверов The Isle!)
-    Доступно только в специальном канале настройки БД сервера The Isle
-
-    Доступные команды:
-        Дино инфо SteamID
-            Выдаёт информацию о динозавре игрока SteamID из базы данных игрового сервера
-
-        Выдать дино dino SteamID
-            Редактирует базу данных сервера прописывая игроку указаного дино
-
-        Список дино
-            Выдаёт список названий дино доступных для выдачи
-    """
-    message = ctx.content.split()
-    if re.search(r"^[Дд]ино\b", message[0]) and re.search(r"^[Ии]нфо\b", message[1]):
-        emb = await gen_emb_for_theisle.database_check(message)
-        await channel.send(embed=emb)
-        emb = await gen_emb_for_theisle.dino_info(ctx, message)
-        await channel.send(embed=emb)
-
-    elif re.search(r"^[Вв]ыдать\b", message[0]) and re.search(r"^[Дд]ино\b", message[1]):
-        emb = await gen_emb_for_theisle.give_dino(message, channel)
-        await channel.send(embed=emb)
-
-    elif re.search(r"^[Сс]писок\b", message[0]) and re.search(r"^[Дд]ино\b", message[1]):
-        await gen_emb_for_theisle.dino_catalog(channel)
