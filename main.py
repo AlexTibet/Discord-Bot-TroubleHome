@@ -1,9 +1,8 @@
 import asyncio
 import discord
 import datetime
-import re
 import websockets
-
+from threading import Thread
 from datastorage import SqliteDataStorage
 import message_handlers
 import gen_embedded_reply
@@ -25,11 +24,8 @@ class MyClient(discord.Client):
         for i in range(len(self.guilds)):
             print(f"Bot run on server '{self.guilds[i].name}' with serverID = {self.guilds[i].id},"
                   f" with {self.guilds[i].member_count} users")
-        print("Connecting to database...")
-        sql_db = SqliteDataStorage(config.db_name)
-        print("Connection to the database is complete.")
-        # Добавление пользователей в базу данных
-        await self.database_filling(sql_db)
+        game = discord.Game("Кусь")
+        await client.change_presence(status=discord.Status.online, activity=game)
         await self.starting_online_check()
         print("Run online activity check")
 
@@ -56,8 +52,9 @@ class MyClient(discord.Client):
         if channel.id == config.TEST_SERVER_CONFIG_CHANNEL or channel.id == config.SERVER_CONFIG_CHANNEL:
             await message_handlers.server_config_message(ctx, channel)
 
-        if channel.id in config.DINO_CHANNEL:  # только для серверов The Isle
-            await message_handlers.dino_from_the_isle_message(ctx, channel)
+        if channel.id in config.PROPOPOSITION_CHANNEL:
+            await ctx.add_reaction('<a:6093_Animated_Checkmark:653294316134989834>')
+            await ctx.add_reaction('<a:1603_Animated_Cross:653294299642855453>')
 
     async def on_member_join(self, member: discord.Member):
         """
@@ -90,24 +87,6 @@ class MyClient(discord.Client):
                 await channel.send(attach.url)
                 await channel.send(attach.proxy_url)
 
-    # ОТКЛЮЧЕНО, в дальнейшем будет использовано для логгирования редактирований сообщений
-    # async def on_raw_message_edit(self, payload):
-    # """
-    # Метод обработки события редактирования сообщения в любом канале к которому у бота есть доступ
-    # Для чатов администраторов реализован запрет на редактирование сообщений
-    # Первоначальное сообщение переотправляется в тот же чат в котором было отредактировано
-    # """
-    #     if payload.channel_id in config.ADMIN_CHANNEL:
-    #         channel = discord.Client.get_channel(self, payload.channel_id)
-    #         try:
-    #             author = payload.cached_message.author
-    #         except AttributeError:
-    #             author = ''
-    #         await channel.send(f"`А ничего ты тут не исправишь просто так!`\nЭто <#{payload.channel_id}>!!!\n\n"
-    #                            f"**{author}** `отправлял сообщение:`\n\n"
-    #                            f"{payload.cached_message.content}")
-    #         await channel.send(f"\n`И исправил так:`\n{payload.data['content']}")
-
     @staticmethod
     async def starting_online_check():
         """
@@ -118,25 +97,34 @@ class MyClient(discord.Client):
         """
         while True:
             try:
-                online = await server_info.bermuda_server_info()
-                await client.online_activity(online)
+                online_rs = await server_info.bermuda_server_info((config.main_host, config.main_query_port))
+                online_ap = await server_info.bermuda_server_info((config.ap_host, config.ap_query_port))
+                await client.online_activity(online_rs, online_ap)
                 await asyncio.sleep(30)
             except Exception as error:
-                print(error)
+                print("Ошибка проверки онлайна\n", error)
                 await asyncio.sleep(30)
                 continue
 
-    @staticmethod
-    async def online_activity(info: dict):
+    async def online_activity(self, info_rs: dict, info_ap: dict):
         """
-        Выставление в качестве статуса бота данных о текущем онлайне сервера
+        Выставление в качестве статуса бота данных о текущем онлайне серверов
         info: словарь со словарём вида info = {'players': {'active': 96, 'total': 100 }}'
         с данными о текущем онлайне
         """
         try:
-            online = f"{info['players']['active']} из {info['players']['total']}"
-        except TypeError:
-            online = "Оффлайн"
+            count = int(info_rs['player_count']) + int(info_ap['player_count'])
+            max_count = int(info_rs['max_players']) + int(info_ap['max_players'])
+            online = f"{count} из {max_count}"
+
+        except TypeError as error:
+            print(error)
+            online = "Кусь"
+        guild = self.get_guild(config.MAIN_DISCORD_ID)
+        rs_count_channel = guild.get_channel(config.RS_CHANNEL_ID)
+        ap_count_channel = guild.get_channel(config.AP_CHANNEL_ID)
+        await rs_count_channel.edit(name=f"Rival {info_rs['player_count']} из {info_rs['max_players']}")
+        await ap_count_channel.edit(name=f"Ancestral {info_ap['player_count']} из {info_ap['max_players']}")
         game = discord.Game(online)
         try:
             await client.change_presence(status=discord.Status.online, activity=game)
@@ -144,33 +132,10 @@ class MyClient(discord.Client):
             game = discord.Game("Обновляю информацию")
             await client.change_presence(status=discord.Status.online, activity=game)
 
-    async def database_filling(self, sql_db: SqliteDataStorage):
-        """
-        Создание и заполнение базы данных
-        """
-        for guild in self.guilds:  # для каждого сервера
-            # создаём таблицы браков (для хранения данных о "браках" пользователей)
-            sql_db.create_marriage_tabel(guild.name.strip().replace(' ', '_'))  # нельзя чтобы в названии был пробел
-            table = None
-            if re.search(config.BoB_server_name, guild.name):
-                table = "BoB_Users"
-            if re.search(config.TheIsle_server_name, guild.name):
-                table = "TheIsle_Users"
-            if table is not None:
-                for member in guild.members:  # для каждого участника сервера
-                    member_status = False
-                    accounts = sql_db.get_accounts(table)
-                    for account in accounts:
-                        if account["discord_id"] == member.id:
-                            print(f"{member} уже есть в базе данных (Таблица: {table} ID:{member.id})")
-                            member_status = True
-                            break
-                    if member_status is not True and table is not None:
-                        sql_db.create_account(table, member.id)
-                        print(f"{member} добавлен в базу данных (Таблица: {table} с ID:{member.id}")
-                continue
-
 
 # RUN
-client = MyClient()
-client.run(config.TOKEN)
+if __name__ == '__main__':
+    intents = discord.Intents.default()
+    intents.members = True
+    client = MyClient(intents=intents)
+    client.run(config.TOKEN)

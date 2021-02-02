@@ -346,6 +346,26 @@ GIF_HUG = [
     'https://media1.tenor.com/images/e9379393e44cfdb3b5544f236219fac0/tenor.gif'
 ]
 
+GIF_CUDDLE = [
+    'https://cdn.discordapp.com/attachments/771266347442765844/771279444126990346/image0.gif',
+    'https://cdn.discordapp.com/attachments/771266347442765844/771279444413382666/image1.gif',
+    'https://cdn.discordapp.com/attachments/771266347442765844/771279444891009034/image2.gif',
+    'https://cdn.discordapp.com/attachments/771266347442765844/771279445255782400/image3.gif',
+    'https://cdn.discordapp.com/attachments/771266347442765844/771279445855174656/image4.gif',
+    'https://cdn.discordapp.com/attachments/771266347442765844/771279446510403584/image5.gif',
+    'https://cdn.discordapp.com/attachments/771266347442765844/771279447277305876/image6.gif',
+    'https://cdn.discordapp.com/attachments/771266347442765844/771279447881154600/image7.gif',
+    'https://cdn.discordapp.com/attachments/771266347442765844/771279448786862080/image8.gif',
+    'https://cdn.discordapp.com/attachments/771266347442765844/771279449190170674/image9.gif',
+    'https://cdn.discordapp.com/attachments/771266347442765844/771279513568018432/image0.gif',
+    'https://cdn.discordapp.com/attachments/771266347442765844/771279513900417044/image1.gif',
+    'https://cdn.discordapp.com/attachments/771266347442765844/771279514311196692/image2.gif',
+    'https://cdn.discordapp.com/attachments/771266347442765844/771279514583433236/image3.gif',
+    'https://cdn.discordapp.com/attachments/771266347442765844/771279514952269884/image4.gif',
+    'https://cdn.discordapp.com/attachments/771266347442765844/771279515425964042/image5.gif',
+    'https://cdn.discordapp.com/attachments/771266347442765844/771279515674476565/image6.gif',
+]
+
 # покормить
 GIF_FEED = [
     'https://i.pinimg.com/originals/1f/0a/09/1f0a09551942879a736ac59b3615bf40.gif',
@@ -767,7 +787,15 @@ GIF_SMOKE = [
     'https://cdn.discordapp.com/attachments/703943541742764053/735967832629575700/453aae99c4d14e505bb3fdc81dd1a40b.gif',
     'https://cdn.discordapp.com/attachments/703943541742764053/735967836119367813/fd88dda4623db11ec3e3de4677859569.gif',
     'https://i.pinimg.com/originals/00/92/64/009264b7ffab974ed0e797a50b1542aa.gif',
-    'https://media1.tenor.com/images/b0eebc667e1c47331f8213f67cb7e7f5/tenor.gif'
+    'https://media1.tenor.com/images/b0eebc667e1c47331f8213f67cb7e7f5/tenor.gif',
+    'https://i.pinimg.com/originals/8e/42/f8/8e42f873d635a30dd6d2d328283e128c.gif',
+    'https://i.pinimg.com/originals/78/e1/5f/78e15f458cff0e2e19bb6d7be63d5f8c.gif',
+    'https://i.pinimg.com/originals/67/7e/49/677e49fdd60502b6998ec8d5103f5616.gif',
+    'https://i.pinimg.com/originals/83/52/4a/83524a79dff66df5de148e842f85914f.gif',
+    'https://i.pinimg.com/originals/a3/83/e9/a383e9294f0e56c50db5ce17adde86c1.gif',
+    'https://i.pinimg.com/originals/1b/ec/f8/1becf8f64599f80a38660987afe7abed.gif',
+    'https://media1.tenor.com/images/0939bede6a8c99af3e9aeef4269c4dcd/tenor.gif',
+    'https://media1.tenor.com/images/2bb8b066fbc169e658ce1ae22fc838db/tenor.gif',
 
 ]
 # кальян
@@ -842,7 +870,8 @@ GIF_DRINK = [
     'https://media1.tenor.com/images/c3861f5ed99f34d36a41e40f05d9cdca/tenor.gif',
     'https://media1.tenor.com/images/487ba55465e8cf5ff78ea5bf8cf06e4a/tenor.gif',
     'https://media1.tenor.com/images/efecb7be9018b9cd11a5866c548a42ca/tenor.gif',
-    'https://media1.tenor.com/images/c030155a91fce60f78e7e8d042f6d377/tenor.gif'
+    'https://media1.tenor.com/images/c030155a91fce60f78e7e8d042f6d377/tenor.gif',
+    'https://media1.tenor.com/images/63a601ef30f735fd01ded04996d186c4/tenor.gif'
 ]
 
 DRINK_EMOJI = ['🥛', '🍷', '🍸', '🍹', '🍺', '🍻', '🥂', '🥃', '🧉']
@@ -904,4 +933,30 @@ GIF_REST = [
     'https://cdn.discordapp.com/attachments/581134474092347392/738742834525503538/giphy.gif',
     'https://cdn.discordapp.com/attachments/581134474092347392/738742852800086067/QB1Kg9K.gif',
     'https://cdn.discordapp.com/attachments/581134474092347392/738742859200462878/RmHG.gif'
+]
+
+YOU_SLEEP = [
+    'https://i.gifer.com/GLoc.gif',
+    'https://i.gifer.com/cSU.gif',
+    'https://i.gifer.com/F9KX.gif',
+    'https://i.gifer.com/PpeN.gif',
+    'https://i.gifer.com/9SFS.gif',
+    'https://i.gifer.com/7M1.gif',
+    'https://i.gifer.com/ARQA.gif',
+    'https://i.gifer.com/H52d.gif',
+    'https://i.gifer.com/ApCX.gif',
+    'https://i.gifer.com/cSU.gif',
+]
+
+I_SLEEP = [
+    'https://i.gifer.com/1Mv.gif',
+    'https://i.gifer.com/78mY.gif',
+    'https://i.gifer.com/IW0.gif',
+    'https://i.gifer.com/LoA1.gif',
+    'https://i.gifer.com/y9L.gif',
+    'https://i.gifer.com/H2I1.gif',
+    'https://i.gifer.com/Egxp.gif',
+    'https://i.gifer.com/CvW.gif',
+    'https://i.gifer.com/U4aA.gif',
+    'https://i.gifer.com/23S5.gif'
 ]
