@@ -787,7 +787,15 @@ GIF_SMOKE = [
     'https://cdn.discordapp.com/attachments/703943541742764053/735967832629575700/453aae99c4d14e505bb3fdc81dd1a40b.gif',
     'https://cdn.discordapp.com/attachments/703943541742764053/735967836119367813/fd88dda4623db11ec3e3de4677859569.gif',
     'https://i.pinimg.com/originals/00/92/64/009264b7ffab974ed0e797a50b1542aa.gif',
-    'https://media1.tenor.com/images/b0eebc667e1c47331f8213f67cb7e7f5/tenor.gif'
+    'https://media1.tenor.com/images/b0eebc667e1c47331f8213f67cb7e7f5/tenor.gif',
+    'https://i.pinimg.com/originals/8e/42/f8/8e42f873d635a30dd6d2d328283e128c.gif',
+    'https://i.pinimg.com/originals/78/e1/5f/78e15f458cff0e2e19bb6d7be63d5f8c.gif',
+    'https://i.pinimg.com/originals/67/7e/49/677e49fdd60502b6998ec8d5103f5616.gif',
+    'https://i.pinimg.com/originals/83/52/4a/83524a79dff66df5de148e842f85914f.gif',
+    'https://i.pinimg.com/originals/a3/83/e9/a383e9294f0e56c50db5ce17adde86c1.gif',
+    'https://i.pinimg.com/originals/1b/ec/f8/1becf8f64599f80a38660987afe7abed.gif',
+    'https://media1.tenor.com/images/0939bede6a8c99af3e9aeef4269c4dcd/tenor.gif',
+    'https://media1.tenor.com/images/2bb8b066fbc169e658ce1ae22fc838db/tenor.gif',
 
 ]
 # кальян
@@ -862,7 +870,8 @@ GIF_DRINK = [
     'https://media1.tenor.com/images/c3861f5ed99f34d36a41e40f05d9cdca/tenor.gif',
     'https://media1.tenor.com/images/487ba55465e8cf5ff78ea5bf8cf06e4a/tenor.gif',
     'https://media1.tenor.com/images/efecb7be9018b9cd11a5866c548a42ca/tenor.gif',
-    'https://media1.tenor.com/images/c030155a91fce60f78e7e8d042f6d377/tenor.gif'
+    'https://media1.tenor.com/images/c030155a91fce60f78e7e8d042f6d377/tenor.gif',
+    'https://media1.tenor.com/images/63a601ef30f735fd01ded04996d186c4/tenor.gif'
 ]
 
 DRINK_EMOJI = ['🥛', '🍷', '🍸', '🍹', '🍺', '🍻', '🥂', '🥃', '🧉']
