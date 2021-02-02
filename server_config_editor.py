@@ -39,6 +39,9 @@ async def editing_preparation(channel, message):
         server = (config.main_host, config.main_port,
                   config.main_login, config.main_password,
                   config.main_config_directory)
+        ap_server = (config.ap_host, config.ap_port,
+                     config.ap_login, config.ap_password,
+                     config.ap_config_directory)
     else:
         raise ValueError
     if await download_server_config(server):
@@ -53,6 +56,11 @@ async def editing_preparation(channel, message):
                     await channel.send('```fix\nФайл конфигурации загружен на сервер```')
                 else:
                     await channel.send('```diff\nНе удалось загрузить файл конфигурации на сервер\nПопробуйте снова```')
+                if channel.id == config.SERVER_CONFIG_CHANNEL:
+                    if await upload_server_config(ap_server):
+                        await channel.send('```fix\nФайл конфигурации загружен на сервер AP```')
+                    else:
+                        await channel.send('```diff\nНе удалось загрузить файл конфигурации на сервер\nПопробуйте снова```')
             else:
                 await channel.send('❌ *Ошибка. Не удалось создать новый файл конфигурации сервера*')
         else:
