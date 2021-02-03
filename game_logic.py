@@ -62,12 +62,15 @@ async def marriage_check_self(ctx):
 
 
 async def marriage_logic(ctx, bot):
+    marriage_msg = await ctx.channel.send(embed=await gen_embedded_reply.marriage(ctx))
+    await marriage_msg.add_reaction('✅')
+    await marriage_msg.add_reaction('❎')
     husband = discord.Client.get_user(bot, ctx.author.id)
     wife = discord.Client.get_user(bot, int(ctx.raw_mentions[0]))
     try:
         answer = await discord.Client.wait_for(bot,
                                                event='reaction_add',
-                                               check=lambda reaction, user: user == wife,
+                                               check=lambda reaction, user: reaction.message.id == marriage_msg.id and user == wife,
                                                timeout=120.0)
         if answer[0].emoji == '✅':
             marriage_role = discord.utils.get(ctx.author.guild.roles, id=config.MARRIAGE_ROLE)
@@ -85,12 +88,15 @@ async def marriage_logic(ctx, bot):
 
 
 async def sex_logic(ctx, bot):
+    marriage_msg = await ctx.channel.send(embed=await gen_embedded_reply.sex(ctx))
+    await marriage_msg.add_reaction('✅')
+    await marriage_msg.add_reaction('❎')
     husband = discord.Client.get_user(bot, ctx.author.id)
     wife = discord.Client.get_user(bot, int(ctx.raw_mentions[0]))
     try:
         answer = await discord.Client.wait_for(bot,
                                                event='reaction_add',
-                                               check=lambda reaction, user: user == wife,
+                                               check=lambda reaction, user: reaction.message.id == marriage_msg.id and user == wife,
                                                timeout=120.0)
         if answer[0].emoji == '✅':
             db = sql_db(config.db_name)

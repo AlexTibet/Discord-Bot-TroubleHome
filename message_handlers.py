@@ -267,16 +267,13 @@ async def game_message(ctx: discord.Message, channel: discord.TextChannel, bot: 
     elif re.search(r"^[Бб]рак\b", message[0]) and (re.search(r"[\d]{18}", message[1]) or re.search(r"[\d]{18}", message[2])):
         await ban_handler(ctx, channel)
         if await game_logic.marriage_check_self(ctx):
-            await channel.send(embed=await gen_embedded_reply.marriage_self(ctx))
+            await ctx.channel.send(embed=await gen_embedded_reply.marriage_self(ctx))
         elif await game_logic.marriage_check_husband(ctx):
-            await channel.send(embed=await gen_embedded_reply.marriage_fail(ctx.author.id))
+            await ctx.channel.send(embed=await gen_embedded_reply.marriage_fail(ctx.author.id))
         elif await game_logic.marriage_check_wife(ctx, bot):
-            await channel.send(embed=await gen_embedded_reply.marriage_fail(ctx.raw_mentions[0]))
+            await ctx.channel.send(embed=await gen_embedded_reply.marriage_fail(ctx.raw_mentions[0]))
         else:
-            marriage_msg = await channel.send(embed=await gen_embedded_reply.marriage(ctx))
-            await marriage_msg.add_reaction('✅')
-            await marriage_msg.add_reaction('❎')
-            await channel.send(embed=await game_logic.marriage_logic(ctx, bot))
+            await ctx.channel.send(embed=await game_logic.marriage_logic(ctx, bot))
 
     elif re.search(r"^[Рр]азвод\b", message[0]):
         await ban_handler(ctx, channel)
@@ -285,9 +282,6 @@ async def game_message(ctx: discord.Message, channel: discord.TextChannel, bot: 
     elif (re.search(r"^[Сс]екс\b", message[0]) or re.search(r"^[Тт]рахнуть\b", message[0])) \
             and len(ctx.raw_mentions) > 0:
         await ban_handler(ctx, channel)
-        marriage_msg = await channel.send(embed=await gen_embedded_reply.sex(ctx))
-        await marriage_msg.add_reaction('✅')
-        await marriage_msg.add_reaction('❎')
         await channel.send(embed=await game_logic.sex_logic(ctx, bot))
 
     elif re.search(r"^[Ии]стория\b", message[0]) and re.search(r"браков\b", message[1]):
