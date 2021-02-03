@@ -1,4 +1,3 @@
-import requests
 import time
 import re
 import io
@@ -77,6 +76,47 @@ class AutoBackup:
                 continue
 
 
+def check_admin_parser(admins: dict) -> int and str:
+    with io.open('download_logs.log', 'r', encoding='utf-8') as log:
+        for line in log:
+            # ловим попытки подключения
+            if re.search(r'LogOnline: STEAM: Adding P2P connection information with user', line):
+                # time = time_detect(line)
+                steam_id = int(line[re.search(r'LogOnline: STEAM: Adding P2P connection information with user',
+                                              line).end():].split()[0].strip())
+                if int(steam_id) in trouble_server_admins.keys():
+                    admins[steam_id].connect()
+            elif re.search(r'LogBeastsOfBermuda: Display: New player [\d]{17} successfully registered to the game server!', line):
+                steam_id = int(line.split(':')[-1].split()[2])
+                if int(steam_id) in trouble_server_admins.keys():
+                    admins[steam_id].connect()
+            elif re.search(r'LogBeastsOfBermuda: Display: Starting post login streaming process for player', line):
+                nik_name, steam_id = line[re.search(
+                    r'LogBeastsOfBermuda: Display: Starting post login streaming process for player',
+                    line).end():].strip().split('with ID')
+                steam_id = int(steam_id.strip())
+                if int(steam_id) in trouble_server_admins.keys():
+                    admins[steam_id].connect()
+            elif re.search(r'LogOnline: STEAM: [\d]{17} has been removed.', line):
+                steam_id = int(line.split(':')[-1].split()[0])
+                if steam_id in trouble_server_admins.keys():
+                    admins[steam_id].disconnect()
+            elif re.search(r'Killing Player ID', line):
+                steam_id = int(line[re.search(r'Killing Player ID', line).end():].split(',')[0])
+                if steam_id in trouble_server_admins.keys():
+                    admins[steam_id].add_kills()
+            elif re.search(r'PLAYER DEATH::Reason:', line):
+                steam_id = int(line.split(',')[-3].split(':')[-1].strip())
+                if steam_id in trouble_server_admins.keys():
+                    admins[steam_id].add_death()
+    online, count = '', 0
+    for admin in admins.values():
+        if admin.get_activity():
+            count += 1
+            online += f'{admin.get_admin_name()} {admin.get_kills_count()}:{admin.get_death_count()}\n'
+    return count, online
+
+
 async def check_admin_online() -> discord.Embed:
     """
     Выясняем кто из администраторов онлайн на сервере.
@@ -86,95 +126,21 @@ async def check_admin_online() -> discord.Embed:
     await download_server_log(
         (config.main_host, config.main_port, config.main_login, config.main_password, config.main_logs_directory)
     )
-    admins = {}
+    admins_rs = {}
     for steam_id in trouble_server_admins.keys():
-        admins[steam_id] = Admin(steam_id)
-
-    with io.open('download_logs.log', 'r', encoding='utf-8') as log:
-        for line in log:
-            # ловим попытки подключения
-            if re.search(r'LogOnline: STEAM: Adding P2P connection information with user', line):
-                # time = time_detect(line)
-                steam_id = int(line[re.search(r'LogOnline: STEAM: Adding P2P connection information with user',
-                                              line).end():].split()[0].strip())
-                if int(steam_id) in trouble_server_admins.keys():
-                    admins[steam_id].connect()
-            elif re.search(r'LogBeastsOfBermuda: Display: New player [\d]{17} successfully registered to the game server!', line):
-                steam_id = int(line.split(':')[-1].split()[2])
-                if int(steam_id) in trouble_server_admins.keys():
-                    admins[steam_id].connect()
-            elif re.search(r'LogBeastsOfBermuda: Display: Starting post login streaming process for player', line):
-                nik_name, steam_id = line[re.search(
-                    r'LogBeastsOfBermuda: Display: Starting post login streaming process for player',
-                    line).end():].strip().split('with ID')
-                steam_id = int(steam_id.strip())
-                if int(steam_id) in trouble_server_admins.keys():
-                    admins[steam_id].connect()
-            elif re.search(r'LogOnline: STEAM: [\d]{17} has been removed.', line):
-                steam_id = int(line.split(':')[-1].split()[0])
-                if steam_id in trouble_server_admins.keys():
-                    admins[steam_id].disconnect()
-            elif re.search(r'Killing Player ID', line):
-                steam_id = int(line[re.search(r'Killing Player ID', line).end():].split(',')[0])
-                if steam_id in trouble_server_admins.keys():
-                    admins[steam_id].add_kills()
-            elif re.search(r'PLAYER DEATH::Reason:', line):
-                steam_id = int(line.split(',')[-3].split(':')[-1].strip())
-                if steam_id in trouble_server_admins.keys():
-                    admins[steam_id].add_death()
-    online, count = '', 0
-    for admin in admins.values():
-        if admin.get_activity():
-            count += 1
-            online += f'{admin.get_admin_name()} {admin.get_kills_count()}:{admin.get_death_count()}\n'
+        admins_rs[steam_id] = Admin(steam_id)
+    count, online = check_admin_parser(admins_rs)
     emb = discord.Embed(title=f"Админы на сервере:",
                         color=0xf6ff00)
     emb.add_field(name=f'Rival `{count}` ', value=online if len(online) > 0 else "На сервере нет админов")
 
-
     await download_server_log(
         (config.ap_host, config.ap_port, config.ap_login, config.ap_password, config.ap_logs_directory)
     )
-    admins = {}
+    admins_ap = {}
     for steam_id in trouble_server_admins.keys():
-        admins[steam_id] = Admin(steam_id)
-    with io.open('download_logs.log', 'r', encoding='utf-8') as log:
-        for line in log:
-            # ловим попытки подключения
-            if re.search(r'LogOnline: STEAM: Adding P2P connection information with user', line):
-                # time = time_detect(line)
-                steam_id = int(line[re.search(r'LogOnline: STEAM: Adding P2P connection information with user',
-                                              line).end():].split()[0].strip())
-                if int(steam_id) in trouble_server_admins.keys():
-                    admins[steam_id].connect()
-            elif re.search(r'LogBeastsOfBermuda: Display: New player [\d]{17} successfully registered to the game server!', line):
-                steam_id = int(line.split(':')[-1].split()[2])
-                if int(steam_id) in trouble_server_admins.keys():
-                    admins[steam_id].connect()
-            elif re.search(r'LogBeastsOfBermuda: Display: Starting post login streaming process for player', line):
-                nik_name, steam_id = line[re.search(
-                    r'LogBeastsOfBermuda: Display: Starting post login streaming process for player',
-                    line).end():].strip().split('with ID')
-                steam_id = int(steam_id.strip())
-                if int(steam_id) in trouble_server_admins.keys():
-                    admins[steam_id].connect()
-            elif re.search(r'LogOnline: STEAM: [\d]{17} has been removed.', line):
-                steam_id = int(line.split(':')[-1].split()[0])
-                if steam_id in trouble_server_admins.keys():
-                    admins[steam_id].disconnect()
-            elif re.search(r'Killing Player ID', line):
-                steam_id = int(line[re.search(r'Killing Player ID', line).end():].split(',')[0])
-                if steam_id in trouble_server_admins.keys():
-                    admins[steam_id].add_kills()
-            elif re.search(r'PLAYER DEATH::Reason:', line):
-                steam_id = int(line.split(',')[-3].split(':')[-1].strip())
-                if steam_id in trouble_server_admins.keys():
-                    admins[steam_id].add_death()
-    online, count = '', 0
-    for admin in admins.values():
-        if admin.get_activity():
-            count += 1
-            online += f'{admin.get_admin_name()} {admin.get_kills_count()}:{admin.get_death_count()}\n'
+        admins_ap[steam_id] = Admin(steam_id)
+    count, online = check_admin_parser(admins_ap)
     emb.add_field(name=f'Ancestral `{count}` ', value=online if len(online) > 0 else "На сервере нет админов")
     return emb
 
@@ -194,4 +160,3 @@ async def bermuda_server_info(server_query):
     for item in server_response:
         server_info[item[0]] = item[1]
     return server_info
-
