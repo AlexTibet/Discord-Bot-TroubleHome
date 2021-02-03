@@ -2,8 +2,6 @@ import asyncio
 import discord
 import datetime
 import websockets
-from threading import Thread
-from datastorage import SqliteDataStorage
 import message_handlers
 import gen_embedded_reply
 import server_info
