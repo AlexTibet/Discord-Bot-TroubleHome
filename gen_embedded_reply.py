@@ -67,9 +67,9 @@ async def online_info():
     return emb
 
 
-async def bite(ctx, message: str) -> discord.embeds:
+async def bite(ctx) -> discord.embeds:
     """Игра 'Кусь', случайно выбирается результат и цель укуса, каждому соответствует свой набор gif"""
-    target, victim, gif_id = await game_logic.bite_logic(message)
+    target, victim, gif_id = await game_logic.bite_logic(ctx)
     emb = discord.Embed(color=ctx.author.color)
     gif_url = random.choice(game_config.GIF_KUS[gif_id])
     if target is not None:
@@ -114,10 +114,10 @@ def gif_url_elector(gif_list: list) -> str:
     return random.choice(gif_list)
 
 
-async def shipper(message: str) -> discord.embeds:
+async def shipper(ctx: discord.message) -> discord.embeds:
     """Игра 'Шипперинг', случайно выбирается результат и gif"""
     heart = random.choice(game_config.SHIPPER_HEART)
-    victim_one, victim_two, compatibility, title = await game_logic.shipper_logic(message)
+    victim_one, victim_two, compatibility, title = await game_logic.shipper_logic(ctx)
     emb = discord.Embed(color=0xF08080)
     emb.add_field(
         name=f'{heart} {compatibility}% {heart}',

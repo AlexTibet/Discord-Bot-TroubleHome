@@ -42,10 +42,10 @@ class MyClient(discord.Client):
             await message_handlers.admin_message(ctx, channel)
 
         if channel.id in config.GAME_CHANNEL:
-            await message_handlers.game_message(ctx, channel, self)
+            await message_handlers.game_message(self, ctx, channel)
 
         if channel.id in config.ADMIN_CHANNEL or channel.id in config.GAME_CHANNEL:
-            await message_handlers.user_info_message(ctx, channel, self)
+            await message_handlers.user_info_message(ctx, channel)
 
         if channel.id == config.TEST_SERVER_CONFIG_CHANNEL or channel.id == config.SERVER_CONFIG_CHANNEL:
             await message_handlers.server_config_message(ctx, channel)

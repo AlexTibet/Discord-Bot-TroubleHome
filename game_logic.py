@@ -7,17 +7,17 @@ import asyncio
 from datastorage import SqliteDataStorage as sql_db
 
 
-async def bite_logic(message: str) -> (str, str, str):
-    victim = message[1].replace('<', '').replace('!', '').replace('@', '').replace('>', '').replace(',', '')
+async def bite_logic(ctx: discord.message) -> (str, str, str):
+    victim = ctx.raw_mentions[0]
     targets = random.choice(game_config.TARGET)
     gif_id = targets[1]
     target = targets[0]
     return target, victim, gif_id
 
 
-async def shipper_logic(message: str) -> (str, str, str, str):
-    victim_one = message[1]
-    victim_two = message[2]
+async def shipper_logic(ctx: discord.message) -> (str, str, str, str):
+    victim_one = ctx.raw_mentions[0]
+    victim_two = ctx.raw_mentions[1]
     compatibility = [i for i in range(101)]
     random.shuffle(compatibility)
     compatibility = random.choice(compatibility)
@@ -37,16 +37,15 @@ async def shipper_logic(message: str) -> (str, str, str, str):
     return victim_one, victim_two, compatibility, title
 
 
-async def marriage_check_wife(ctx, bot) -> True or False:
-    wife = discord.Client.get_user(bot, ctx.raw_mentions[0])
-    wife_member = ctx.author.guild.get_member(wife.id)
+async def marriage_check_wife(ctx: discord.message) -> bool:
+    wife_member = ctx.author.guild.get_member(ctx.raw_mentions[0])
     for role in wife_member.roles:
         if role.id == config.MARRIAGE_ROLE:
             return True
     return False
 
 
-async def marriage_check_husband(ctx) -> True or False:
+async def marriage_check_husband(ctx: discord.message) -> bool:
     husband = ctx.author
     for role in husband.roles:
         if role.id == config.MARRIAGE_ROLE:
@@ -54,7 +53,7 @@ async def marriage_check_husband(ctx) -> True or False:
     return False
 
 
-async def marriage_check_self(ctx):
+async def marriage_check_self(ctx) -> bool:
     if ctx.author.id == ctx.raw_mentions[0]:
         return True
     else:
@@ -91,8 +90,8 @@ async def sex_logic(ctx, bot):
     marriage_msg = await ctx.channel.send(embed=await gen_embedded_reply.sex(ctx))
     await marriage_msg.add_reaction('✅')
     await marriage_msg.add_reaction('❎')
-    husband = discord.Client.get_user(bot, ctx.author.id)
-    wife = discord.Client.get_user(bot, int(ctx.raw_mentions[0]))
+    husband = ctx.author.guild.get_member(ctx.author.id)
+    wife = ctx.author.guild.get_member(ctx.raw_mentions[0])
     try:
         answer = await discord.Client.wait_for(bot,
                                                event='reaction_add',
