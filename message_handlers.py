@@ -103,7 +103,7 @@ async def moderators_message(ctx: discord.Message, channel: discord.TextChannel)
 
 
 @command_handler
-async def game_message(ctx: discord.Message, channel: discord.TextChannel, bot: discord.Client):
+async def game_message(bot: discord.Client, ctx: discord.Message, channel: discord.TextChannel):
     """
     Обработка сообщения на наличие игровых команд бота
     (доступны в игровых каналах, список id каналов в config.GAME_CHANNEL)
@@ -174,7 +174,7 @@ async def game_message(ctx: discord.Message, channel: discord.TextChannel, bot: 
     message.append('-')
     if re.search(r"^[Кк]усь\b", message[0]) and len(ctx.raw_mentions) > 0:
         await ban_handler(ctx, channel)
-        await channel.send(embed=await gen_embedded_reply.bite(ctx, message))
+        await channel.send(embed=await gen_embedded_reply.bite(ctx))
 
     elif re.search(r"^[Кк]то\b", message[0]) and re.search(r"^[Яя]\b", message[1]):
         await ban_handler(ctx, channel)
@@ -182,7 +182,7 @@ async def game_message(ctx: discord.Message, channel: discord.TextChannel, bot: 
 
     elif re.search(r"^[Шш]ипперить\b", message[0]) and len(ctx.raw_mentions) == 2:
         await ban_handler(ctx, channel)
-        await channel.send(embed=await gen_embedded_reply.shipper(message))
+        await channel.send(embed=await gen_embedded_reply.shipper(ctx))
 
     elif re.search(r"^[Оо]бнять\b", message[0]) and len(ctx.raw_mentions) > 0:
         await ban_handler(ctx, channel)
@@ -201,7 +201,8 @@ async def game_message(ctx: discord.Message, channel: discord.TextChannel, bot: 
         await ban_handler(ctx, channel)
         await channel.send(embed=await gen_embedded_reply.kiss(ctx))
 
-    elif (re.search(r"^[Лл]юбить\b", message[0]) or re.search(r"^[Лл]юблю\b", message[0])) and len(ctx.raw_mentions) > 0:
+    elif (re.search(r"^[Лл]юбить\b", message[0]) or re.search(r"^[Лл]юблю\b", message[0])) \
+            and len(ctx.raw_mentions) > 0:
         await ban_handler(ctx, channel)
         await channel.send(embed=await gen_embedded_reply.love(ctx))
 
@@ -267,16 +268,13 @@ async def game_message(ctx: discord.Message, channel: discord.TextChannel, bot: 
     elif re.search(r"^[Бб]рак\b", message[0]) and (re.search(r"[\d]{18}", message[1]) or re.search(r"[\d]{18}", message[2])):
         await ban_handler(ctx, channel)
         if await game_logic.marriage_check_self(ctx):
-            await channel.send(embed=await gen_embedded_reply.marriage_self(ctx))
+            await ctx.channel.send(embed=await gen_embedded_reply.marriage_self(ctx))
         elif await game_logic.marriage_check_husband(ctx):
-            await channel.send(embed=await gen_embedded_reply.marriage_fail(ctx.author.id))
-        elif await game_logic.marriage_check_wife(ctx, bot):
-            await channel.send(embed=await gen_embedded_reply.marriage_fail(ctx.raw_mentions[0]))
+            await ctx.channel.send(embed=await gen_embedded_reply.marriage_fail(ctx.author.id))
+        elif await game_logic.marriage_check_wife(ctx):
+            await ctx.channel.send(embed=await gen_embedded_reply.marriage_fail(ctx.raw_mentions[0]))
         else:
-            marriage_msg = await channel.send(embed=await gen_embedded_reply.marriage(ctx))
-            await marriage_msg.add_reaction('✅')
-            await marriage_msg.add_reaction('❎')
-            await channel.send(embed=await game_logic.marriage_logic(ctx, bot))
+            await ctx.channel.send(embed=await game_logic.marriage_logic(ctx, bot))
 
     elif re.search(r"^[Рр]азвод\b", message[0]):
         await ban_handler(ctx, channel)
@@ -285,9 +283,6 @@ async def game_message(ctx: discord.Message, channel: discord.TextChannel, bot: 
     elif (re.search(r"^[Сс]екс\b", message[0]) or re.search(r"^[Тт]рахнуть\b", message[0])) \
             and len(ctx.raw_mentions) > 0:
         await ban_handler(ctx, channel)
-        marriage_msg = await channel.send(embed=await gen_embedded_reply.sex(ctx))
-        await marriage_msg.add_reaction('✅')
-        await marriage_msg.add_reaction('❎')
         await channel.send(embed=await game_logic.sex_logic(ctx, bot))
 
     elif re.search(r"^[Ии]стория\b", message[0]) and re.search(r"браков\b", message[1]):
@@ -358,7 +353,7 @@ async def admin_message(ctx: discord.Message, channel: discord.TextChannel):
 
 
 @command_handler
-async def user_info_message(ctx: discord.Message, channel: discord.TextChannel, bot: discord.Client):
+async def user_info_message(ctx: discord.Message, channel: discord.TextChannel):
     """
     Обработка сообщения на наличие команд запроса информации о пользователе
     (Доступно в игровых и админских чатах)
