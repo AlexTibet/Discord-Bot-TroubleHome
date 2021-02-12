@@ -133,15 +133,15 @@ async def check_admin_online() -> discord.Embed:
     emb = discord.Embed(title=f"Админы на сервере:",
                         color=0xf6ff00)
     emb.add_field(name=f'Rival `{count}` ', value=online if len(online) > 0 else "На сервере нет админов")
-
-    await download_server_log(
-        (config.ap_host, config.ap_port, config.ap_login, config.ap_password, config.ap_logs_directory)
-    )
-    admins_ap = {}
-    for steam_id in trouble_server_admins.keys():
-        admins_ap[steam_id] = Admin(steam_id)
-    count, online = check_admin_parser(admins_ap)
-    emb.add_field(name=f'Ancestral `{count}` ', value=online if len(online) > 0 else "На сервере нет админов")
+    #
+    # await download_server_log(
+    #     (config.ap_host, config.ap_port, config.ap_login, config.ap_password, config.ap_logs_directory)
+    # )
+    # admins_ap = {}
+    # for steam_id in trouble_server_admins.keys():
+    #     admins_ap[steam_id] = Admin(steam_id)
+    # count, online = check_admin_parser(admins_ap)
+    # emb.add_field(name=f'Ancestral `{count}` ', value=online if len(online) > 0 else "На сервере нет админов")
     return emb
 
 

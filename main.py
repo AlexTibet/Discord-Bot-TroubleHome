@@ -96,23 +96,23 @@ class MyClient(discord.Client):
         while True:
             try:
                 online_rs = await server_info.bermuda_server_info((config.main_host, config.main_query_port))
-                online_ap = await server_info.bermuda_server_info((config.ap_host, config.ap_query_port))
-                await client.online_activity(online_rs, online_ap)
+                # online_ap = await server_info.bermuda_server_info((config.ap_host, config.ap_query_port))
+                await client.online_activity(online_rs)
                 await asyncio.sleep(30)
             except Exception as error:
                 print("Ошибка проверки онлайна\n", error)
                 await asyncio.sleep(30)
                 continue
 
-    async def online_activity(self, info_rs: dict, info_ap: dict):
+    async def online_activity(self, info_rs: dict):
         """
         Выставление в качестве статуса бота данных о текущем онлайне серверов
         info: словарь со словарём вида info = {'players': {'active': 96, 'total': 100 }}'
         с данными о текущем онлайне
         """
         try:
-            count = int(info_rs['player_count']) + int(info_ap['player_count'])
-            max_count = int(info_rs['max_players']) + int(info_ap['max_players'])
+            count = int(info_rs['player_count'])
+            max_count = int(info_rs['max_players'])
             online = f"{count} из {max_count}"
 
         except TypeError as error:
@@ -120,9 +120,7 @@ class MyClient(discord.Client):
             online = "Кусь"
         guild = self.get_guild(config.MAIN_DISCORD_ID)
         rs_count_channel = guild.get_channel(config.RS_CHANNEL_ID)
-        ap_count_channel = guild.get_channel(config.AP_CHANNEL_ID)
         await rs_count_channel.edit(name=f"Rival {info_rs['player_count']} из {info_rs['max_players']}")
-        await ap_count_channel.edit(name=f"Ancestral {info_ap['player_count']} из {info_ap['max_players']}")
         game = discord.Game(online)
         try:
             await client.change_presence(status=discord.Status.online, activity=game)

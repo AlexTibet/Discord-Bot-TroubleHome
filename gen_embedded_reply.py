@@ -29,11 +29,11 @@ async def banned_user(discord_id: int):
 
 async def online_info():
     info_rs = await server_info.bermuda_server_info((config.main_host, config.main_query_port))
-    info_ap = await server_info.bermuda_server_info((config.ap_host, config.ap_query_port))
-    if info_rs is not None or info_ap is not None:
+    # info_ap = await server_info.bermuda_server_info((config.ap_host, config.ap_query_port))
+    if info_rs is not None:
         emb = discord.Embed(
-            title=f" {int(info_rs['player_count']) + int(info_ap['player_count'])}"
-                  f" из {int(info_rs['max_players']) + int(info_ap['max_players'])}",
+            title=f" {int(info_rs['player_count'])}"
+                  f" из {int(info_rs['max_players'])}",
             color=0xf6ff00)
         if info_rs is not None:
             emb.add_field(
@@ -51,17 +51,17 @@ async def online_info():
                 value=f"_",
                 inline=False
             )
-        if info_ap is not None:
-            emb.add_field(
-                name=f"{info_ap['server_name']}",
-                value=f"Карта: {info_ap['map_name']}",
-                inline=False
-                )
-            emb.add_field(
-                name=f"{info_ap['player_count']} из {info_ap['max_players']}",
-                value=f"{info_ap['game']} v:{info_ap['version']}\nPing: {str(float(info_ap['ping']*1000))[0:5]}мс",
-                inline=False
-            )
+        # if info_ap is not None:
+        #     emb.add_field(
+        #         name=f"{info_ap['server_name']}",
+        #         value=f"Карта: {info_ap['map_name']}",
+        #         inline=False
+        #         )
+        #     emb.add_field(
+        #         name=f"{info_ap['player_count']} из {info_ap['max_players']}",
+        #         value=f"{info_ap['game']} v:{info_ap['version']}\nPing: {str(float(info_ap['ping']*1000))[0:5]}мс",
+        #         inline=False
+        #     )
     else:
         emb = discord.Embed(title=f'❌ Нет данных ❌', color=0xFF0000)
     return emb
@@ -121,7 +121,7 @@ async def shipper(ctx: discord.message) -> discord.embeds:
     emb = discord.Embed(color=0xF08080)
     emb.add_field(
         name=f'{heart} {compatibility}% {heart}',
-        value=f"{victim_one} и {victim_two} {title}")
+        value=f"<@{victim_one}> и <@{victim_two}> {title}")
     emb.set_image(url=gif_url_elector(game_config.GIF_SHIPPER))
     return emb
 

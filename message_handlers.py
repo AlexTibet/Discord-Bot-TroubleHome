@@ -391,14 +391,14 @@ async def server_config_message(ctx: discord.Message, channel: discord.TextChann
             await channel.send(embed=await gen_embedded_reply.no_access())
     elif re.search(r'[Пп]еренести', message[0]) and re.search(r'с[еэ]йвы', message[1]):
         if role_access(ctx, config.TECHNIC_ROLE):
-            if len(message) > 2 and re.search(r'[Аа]п', message[2]):
-                server_name = 'Ancestral_Plains'
-                main_server = (server_name, config.ap_host, config.ap_port, config.ap_login, config.ap_password,
-                               config.ap_saves_directory)
-            else:
-                server_name = 'Rival_Shores'
-                main_server = (server_name, config.main_host, config.main_port, config.main_login, config.main_password,
-                               config.main_saves_directory)
+            # if len(message) > 2 and re.search(r'[Аа]п', message[2]):
+            #     server_name = 'Ancestral_Plains'
+            #     main_server = (server_name, config.ap_host, config.ap_port, config.ap_login, config.ap_password,
+            #                    config.ap_saves_directory)
+            # else:
+            server_name = 'Rival_Shores'
+            main_server = (server_name, config.main_host, config.main_port, config.main_login, config.main_password,
+                           config.main_saves_directory)
             await channel.send(f'```fix\nНачинаю скачивание базы данных с сервера {server_name}\n```')
             test_server = (server_name, config.test_host, config.test_port, config.test_login, config.test_password,
                            config.test_saves_directory)
