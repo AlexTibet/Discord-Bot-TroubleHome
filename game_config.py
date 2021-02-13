@@ -421,7 +421,6 @@ GIF_KISS = [
     'https://media1.tenor.com/images/5654c7b35e067553e99bb996535c0a75/tenor.gif',
     'https://media1.tenor.com/images/cde82deb56bbb78eabf6317011bb922d/tenor.gif',
     'https://media1.tenor.com/images/11b86f035dcd63ba225d440884d294a6/tenor.gif',
-    'https://cdn.discordapp.com/attachments/588354610041716737/740526033450696714/13429138.gif'
 ]
 
 # Секс
