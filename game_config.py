@@ -755,6 +755,27 @@ GIF_LICK = [
     'https://media.tenor.com/images/9d21adaaff7cc7fd1f9ed423522b5c4a/tenor.gif',
     'https://media.tenor.com/images/2ecf1b9ab5e9eed4bc42cba44ada0a7c/tenor.gif'
 ]
+# в шоке
+GIF_SHOCK = [
+    'https://media1.tenor.com/images/c9cb4422596fdaa9798415eb04bd9c7b/tenor.gif',
+    'https://media1.tenor.com/images/04a1753bdc9ba3c21b7edb0997ad5c62/tenor.gif',
+    'https://media1.tenor.com/images/6eaab0d39bd1afa7be8985eb7ac2d28b/tenor.gif',
+    'https://media1.tenor.com/images/41a0802c644036ad7f9e6830fbc8cafa/tenor.gif',
+    'https://media1.tenor.com/images/7c5f24545a94827d2464bd6b79ea6a2e/tenor.gif',
+    'https://media1.tenor.com/images/5ad4571a6e2df6ac1975234ecd389a8b/tenor.gif',
+    'https://media1.tenor.com/images/87ed894ffa25ffe3fb049913c2cefc87/tenor.gif',
+    'https://media1.tenor.com/images/e356deeba608e05e43fa742429110bb9/tenor.gif',
+    'https://media1.tenor.com/images/46d73c3cc50fa32e0e1d8c2a38007477/tenor.gif',
+    'https://media1.tenor.com/images/0562ded117922b0f32dc988d76c7e910/tenor.gif',
+    'https://media1.tenor.com/images/3358aa770dc918b8304ea9d203a0e769/tenor.gif',
+    'https://media1.tenor.com/images/c784d3e8585e9f3ad7de66944651b6ed/tenor.gif',
+    'https://media1.tenor.com/images/4109d6196ce5b4e34fba1d2277236424/tenor.gif',
+    'https://media1.tenor.com/images/b2a6c0b59edf022fcafe0db6982b599f/tenor.gif',
+    'https://media1.tenor.com/images/f561190e9a96a466dbf2757ff0073c28/tenor.gif',
+    'https://media1.tenor.com/images/1381a9155986f6d79e0b660fe247b4c6/tenor.gif',
+    'https://media1.tenor.com/images/eb04a4d9dd55a2cd03e29ec2491b35a4/tenor.gif',
+    'https://media1.tenor.com/images/5c36b5497629f905d0c011d16f01c0ff/tenor.gif'
+]
 # курить
 GIF_SMOKE = [
     'https://media1.tenor.com/images/aaefb36cb58131a4e41b2f80bc176bba/tenor.gif',

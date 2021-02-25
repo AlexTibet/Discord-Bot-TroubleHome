@@ -1,6 +1,7 @@
 import asyncio
 import discord
 import datetime
+import logging
 import websockets
 import message_handlers
 import gen_embedded_reply
@@ -18,14 +19,14 @@ class MyClient(discord.Client):
         Действия при запуске бота
         (Отображение информации о названии серверов на которых запустился бот в консоль)
         """
-        print(f'Logged on as {self.user}!')
+        logging.info(f'Logged on as {self.user}!')
         for i in range(len(self.guilds)):
-            print(f"Bot run on server '{self.guilds[i].name}' with serverID = {self.guilds[i].id},"
-                  f" with {self.guilds[i].member_count} users")
+            logging.info(f"Bot run on server '{self.guilds[i].name}' with serverID = {self.guilds[i].id},"
+                         f" with {self.guilds[i].member_count} users")
         game = discord.Game("Кусь")
         await client.change_presence(status=discord.Status.online, activity=game)
         await self.starting_online_check()
-        print("Run online activity check")
+        logging.info("Run online activity check")
 
     async def on_message(self, ctx: discord.Message):
         """
@@ -33,9 +34,9 @@ class MyClient(discord.Client):
         Смотрим каждое сообщение в доступных каналах, выводим в консоль и обрабатываем
         Вызываем функции обработки сообщений соответствующих категорий команд
         """
-        await message_handlers.message_logging(ctx)
-
         channel = discord.Client.get_channel(self, ctx.channel.id)
+
+        await message_handlers.message_logging(ctx)
         await message_handlers.moderators_message(ctx, channel)
 
         if channel.id in config.ADMIN_CHANNEL:
@@ -100,7 +101,7 @@ class MyClient(discord.Client):
                 await client.online_activity(online_rs)
                 await asyncio.sleep(30)
             except Exception as error:
-                print("Ошибка проверки онлайна\n", error)
+                logging.info("Ошибка проверки онлайна\n", error)
                 await asyncio.sleep(30)
                 continue
 
@@ -116,7 +117,7 @@ class MyClient(discord.Client):
             online = f"{count} из {max_count}"
 
         except TypeError as error:
-            print(error)
+            logging.info(error)
             online = "Кусь"
         guild = self.get_guild(config.MAIN_DISCORD_ID)
         rs_count_channel = guild.get_channel(config.RS_CHANNEL_ID)
@@ -133,5 +134,6 @@ class MyClient(discord.Client):
 if __name__ == '__main__':
     intents = discord.Intents.default()
     intents.members = True
+    logging.basicConfig(filename='bot.log', level=logging.INFO)
     client = MyClient(intents=intents)
     client.run(config.TOKEN)

@@ -240,6 +240,15 @@ async def lick(ctx):
     return emb
 
 
+async def player_shock(ctx):
+    emb = discord.Embed(color=ctx.author.color)
+    emb.add_field(
+        name=f'ШОК!',
+        value=f"<@{ctx.author.id}> шокирован!")
+    emb.set_image(url=gif_url_elector(game_config.GIF_SHOCK))
+    return emb
+
+
 async def sex(ctx):
     emb = discord.Embed(color=ctx.author.color)
     emb.add_field(

@@ -261,9 +261,14 @@ async def game_message(bot: discord.Client, ctx: discord.Message, channel: disco
     elif re.search(r"^[Тт]анцевать\b", message[0]):
         await ban_handler(ctx, channel)
         await channel.send(embed=await gen_embedded_reply.dance(ctx))
-    if re.search(r"^[Сс]пать", message[0]):
+
+    elif re.search(r"^[Сс]пать", message[0]):
         await ban_handler(ctx, channel)
         await channel.send(embed=await gen_embedded_reply.player_sleep(ctx))
+
+    elif re.search(r"^[Шш]ок", message[0]) or re.search(r"^[Аа]хуеть", message[0]):
+        await ban_handler(ctx, channel)
+        await channel.send(embed=await gen_embedded_reply.player_shock(ctx))
 
     elif re.search(r"^[Бб]рак\b", message[0]) and (re.search(r"[\d]{18}", message[1]) or re.search(r"[\d]{18}", message[2])):
         await ban_handler(ctx, channel)
