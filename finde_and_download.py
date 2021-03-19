@@ -1,4 +1,4 @@
-from ftplib import FTP
+from ftplib import FTP, error_perm
 import datetime
 from os import path, mkdir
 
@@ -76,6 +76,23 @@ def download_server_saves(server: tuple) -> bool:
             return True
         except FileNotFoundError:
             return False
+
+
+def delete_server_saves(server: tuple) -> bool:
+    """Удаляем сохранения игрового сервера server"""
+    name, host, port, login, password, directory = server
+    with FTP() as ftp:
+        ftp.connect(host, port)
+        ftp.login(login, password)
+        ftp.cwd(directory)
+        filenames = ['DeathHistory', 'DynamicWorld', 'Entities', 'PlayerPunishments', 'UserProfiles', 'WorldItems']
+        for filename in filenames:
+            try:
+                ftp.delete(f"SERVER_{name}_{filename}.sav")
+            except (error_perm, FileNotFoundError):
+                continue
+        return True
+
 
 
 def backup_server_data(server: tuple) -> bool:

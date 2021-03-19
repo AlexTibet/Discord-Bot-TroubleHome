@@ -1,12 +1,13 @@
 import re
 from datetime import datetime
+
 import gen_embedded_reply
 import game_logic
 import discord
 from server_info import check_admin_online
 import config
 from server_config_editor import editing_configuration
-from finde_and_download import download_server_saves, upload_server_saves
+from finde_and_download import download_server_saves, upload_server_saves, delete_server_saves
 
 
 def role_access(ctx: discord.Message, access_list: list) -> True or False:
@@ -266,7 +267,7 @@ async def game_message(bot: discord.Client, ctx: discord.Message, channel: disco
         await ban_handler(ctx, channel)
         await channel.send(embed=await gen_embedded_reply.player_sleep(ctx))
 
-    elif re.search(r"^[Шш]ок", message[0]) or re.search(r"^[Аа]хуеть", message[0]):
+    elif re.search(r"^[Шш]ок", message[0]) or re.search(r"^[Аа]хуеть", message[0]) or (re.search(r"[Яя]", message[0]) and re.search(r"[Вв]", message[1]) and re.search(r"[Аа]хуе", message[2])):
         await ban_handler(ctx, channel)
         await channel.send(embed=await gen_embedded_reply.player_shock(ctx))
 
@@ -337,7 +338,7 @@ async def admin_message(ctx: discord.Message, channel: discord.TextChannel):
         await channel.send(embed=await gen_embedded_reply.steam_id_info(steam_id))
 
     if re.search(r"^[Кк]ако[йв]\b", message[0]) and re.search(r"^[Оо]нлайн\b", message[1].replace('?', '')):
-        await channel.send(embed=await gen_embedded_reply.online_info())
+        await channel.send(embed=await gen_embedded_reply.online_info(config.main_host, config.main_query_port))
 
     if re.search(r'^[Бб]устеры', message[0]):
         boosters = []
@@ -421,4 +422,14 @@ async def server_config_message(ctx: discord.Message, channel: discord.TextChann
                 await channel.send('❌ *Ошибка. Не удалось загрузить базу данных на тестовый сервер*')
                 await channel.send('```diff\nПеренос базы данных не удался\n```')
                 raise IndexError    # Прерываем выполнение функции
+
+    elif re.search(r'[Сс]татус', message[0]):
+        await channel.send(embed=await gen_embedded_reply.online_info(config.test_host, config.test_query_port))
+
+    elif re.search(r'[Уу]далить', message[0]) and re.search(r'с[еэ]йвы', message[1]):
+        server_name = 'Rival_Shores'
+        test_server = (server_name, config.test_host, config.test_port, config.test_login, config.test_password,
+                       config.test_saves_directory)
+        if delete_server_saves(test_server):
+            await channel.send('```fix\nБаза данных удалена.\n```')
 
