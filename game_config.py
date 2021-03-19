@@ -345,7 +345,7 @@ GIF_HUG = [
     'https://media1.tenor.com/images/e2f0a352d581817926df2d618e03e9ab/tenor.gif',
     'https://media1.tenor.com/images/e9379393e44cfdb3b5544f236219fac0/tenor.gif'
 ]
-
+# тереться
 GIF_CUDDLE = [
     'https://cdn.discordapp.com/attachments/771266347442765844/771279444126990346/image0.gif',
     'https://cdn.discordapp.com/attachments/771266347442765844/771279444413382666/image1.gif',
