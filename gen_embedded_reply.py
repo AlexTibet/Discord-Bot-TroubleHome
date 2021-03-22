@@ -159,9 +159,15 @@ class GenGameEmbed:
     def get_embed(self) -> discord.Embed:
         self._get_game_info()
         author = self.ctx.author.id
-        target = self.ctx.raw_mentions[0]
+        try:
+            target = self.ctx.raw_mentions[0]
+        except Exception:
+            target = None
         description = self.game_info.description
-        self.emb = discord.Embed(description=f"<@{author}> {description} <@{target}>", color=self.ctx.author.color)
+        if target:
+            self.emb = discord.Embed(description=f"<@{author}> {description} <@{target}>", color=self.ctx.author.color)
+        else:
+            self.emb = discord.Embed(description=f"<@{author}> {description}", colour=self.ctx.author.color)
         self._add_gif()
         return self.emb
 
@@ -170,24 +176,6 @@ async def simple_game(ctx, command):
     game = GenGameEmbed(ctx, command)
     return game.get_embed()
 
-
-
-async def love(ctx):
-    emb = discord.Embed(color=ctx.author.color)
-    emb.add_field(
-        name=f'Любовь',
-        value=f"<@{ctx.author.id}> любит <@{ctx.raw_mentions[0]}>")
-    emb.set_image(url=gif_url_elector(game_config.GIF_LOVE))
-    return emb
-
-
-async def hit(ctx):
-    emb = discord.Embed(color=ctx.author.color)
-    emb.add_field(
-        name=f'Удар!',
-        value=f"<@{ctx.author.id}> бьёт <@{ctx.raw_mentions[0]}>")
-    emb.set_image(url=gif_url_elector(game_config.GIF_HIT))
-    return emb
 
 
 async def rest(ctx):
@@ -199,57 +187,12 @@ async def rest(ctx):
     return emb
 
 
-async def slap(ctx):
-    emb = discord.Embed(color=ctx.author.color)
-    emb.add_field(
-        name=f'Шлёп!',
-        value=f"<@{ctx.author.id}> шлёпает <@{ctx.raw_mentions[0]}>")
-    emb.set_image(url=gif_url_elector(game_config.GIF_SLAP))
-    return emb
-
-
-async def poke(ctx):
-    emb = discord.Embed(color=ctx.author.color)
-    emb.add_field(
-        name=f'Тык',
-        value=f"<@{ctx.author.id}> тыкает <@{ctx.raw_mentions[0]}>")
-    emb.set_image(url=gif_url_elector(game_config.GIF_POKE))
-    return emb
-
-
 async def take_hand(ctx):
     emb = discord.Embed(color=ctx.author.color)
     emb.add_field(
         name=f'Взять за руку',
         value=f"<@{ctx.author.id}> берёт за руку <@{ctx.raw_mentions[0]}>")
     emb.set_image(url=gif_url_elector(game_config.GIF_TAKEHAND))
-    return emb
-
-
-async def stroke(ctx):
-    emb = discord.Embed(color=ctx.author.color)
-    emb.add_field(
-        name=f'Погладить',
-        value=f"<@{ctx.author.id}> гладит <@{ctx.raw_mentions[0]}>")
-    emb.set_image(url=gif_url_elector(game_config.GIF_STROKE))
-    return emb
-
-
-async def sad(ctx):
-    emb = discord.Embed(color=ctx.author.color)
-    emb.add_field(
-        name=f'Печаль',
-        value=f"<@{ctx.author.id}> грустит...")
-    emb.set_image(url=gif_url_elector(game_config.GIF_SAD))
-    return emb
-
-
-async def lick(ctx):
-    emb = discord.Embed(color=ctx.author.color)
-    emb.add_field(
-        name=f'Лизь',
-        value=f"<@{ctx.author.id}> облизывает <@{ctx.raw_mentions[0]}>")
-    emb.set_image(url=gif_url_elector(game_config.GIF_LICK))
     return emb
 
 
@@ -452,15 +395,6 @@ async def marriage_history(ctx, channel, target=None):
                 await channel.send(embed=emb)
             else:
                 await channel.send("*Ничего не найдено*")
-
-
-async def anger(ctx):
-    emb = discord.Embed(color=ctx.author.color)
-    emb.add_field(
-        name=f'Злость',
-        value=f"<@{ctx.author.id}> злится")
-    emb.set_image(url=gif_url_elector(game_config.GIF_ANGER))
-    return emb
 
 
 async def smoke(ctx):

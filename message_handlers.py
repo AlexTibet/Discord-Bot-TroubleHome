@@ -218,11 +218,11 @@ async def game_message(bot: discord.Client, ctx: discord.Message, channel: disco
     elif (re.search(r"^[Шш]л[её]п\b", message[0]) or re.search(r"^[Шш]л[её]пнуть\b", message[0])) \
             and len(ctx.raw_mentions) > 0:
         await ban_handler(ctx, channel)
-        await channel.send(embed=await gen_embedded_reply.slap(ctx))
+        await channel.send(embed=await gen_embedded_reply.simple_game(ctx, 'Шлёп'))
 
     elif (re.search(r"^[Тт]ык\b", message[0]) or re.search(r"^[Тт]ыкнуть\b", message[0])) and len(ctx.raw_mentions) > 0:
         await ban_handler(ctx, channel)
-        await channel.send(embed=await gen_embedded_reply.poke(ctx))
+        await channel.send(embed=await gen_embedded_reply.simple_game(ctx, 'Тыкнуть'))
 
     elif re.search(r"^[Вв]зять\b", message[0]) and re.search(r"за", message[1]) and re.search(
             r"руку", message[2]) and len(ctx.raw_mentions) > 0:
@@ -232,20 +232,20 @@ async def game_message(bot: discord.Client, ctx: discord.Message, channel: disco
     elif (re.search(r"^[Гг]ладить\b", message[0]) or re.search(r"^[Пп]огладить\b", message[0])) \
             and len(ctx.raw_mentions) > 0:
         await ban_handler(ctx, channel)
-        await channel.send(embed=await gen_embedded_reply.stroke(ctx))
+        await channel.send(embed=await gen_embedded_reply.simple_game(ctx, 'Погладить'))
 
     elif (re.search(r"^[Лл]изь\b", message[0]) or re.search(r"^[Лл]изнуть\b", message[0])) \
             and len(ctx.raw_mentions) > 0:
         await ban_handler(ctx, channel)
-        await channel.send(embed=await gen_embedded_reply.lick(ctx))
+        await channel.send(embed=await gen_embedded_reply.simple_game(ctx, 'Лизнуть'))
 
     elif re.search(r"^[Гг]русть\b", message[0]) or re.search(r"^[Пп]ечаль\b", message[0]):
         await ban_handler(ctx, channel)
-        await channel.send(embed=await gen_embedded_reply.sad(ctx))
+        await channel.send(embed=await gen_embedded_reply.simple_game(ctx, 'Печаль'))
 
     elif re.search(r"^[Зз]лость\b", message[0]):
         await ban_handler(ctx, channel)
-        await channel.send(embed=await gen_embedded_reply.anger(ctx))
+        await channel.send(embed=await gen_embedded_reply.simple_game(ctx, 'Злость'))
 
     elif re.search(r"^[Кк]урить\b", message[0]):
         await ban_handler(ctx, channel)
@@ -432,4 +432,6 @@ async def server_config_message(ctx: discord.Message, channel: discord.TextChann
                        config.test_saves_directory)
         if delete_server_saves(test_server):
             await channel.send('```fix\nБаза данных удалена.\n```')
+
+
 
