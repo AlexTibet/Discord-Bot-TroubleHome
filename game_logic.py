@@ -1,3 +1,4 @@
+from collections import namedtuple
 import random
 import game_config
 import discord
@@ -5,6 +6,34 @@ import gen_embedded_reply
 import config
 import asyncio
 from datastorage import SqliteDataStorage as sql_db
+
+
+GameInfo = namedtuple('GameInfo', 'description gifs')
+
+GAMES = {
+    'Кусь': GameInfo('откусил', game_config.GIF_KUS),
+    'Обнять': GameInfo('обнимает', game_config.GIF_HUG),
+    'Тереться': GameInfo('трётся об', game_config.GIF_CUDDLE),
+    'Шипперить': GameInfo(game_config.SHIPPER_HEART, game_config.GIF_CUDDLE),
+    'Покормить': GameInfo('кормит', game_config.GIF_FEED),
+    'Поцеловать': GameInfo('целует', game_config.GIF_KISS),
+    'Любовь': GameInfo('любит', game_config.GIF_LOVE),
+    'Секс': GameInfo('занимается сексом', game_config.GIF_SEX),
+    'Злость': GameInfo('злится', game_config.GIF_ANGER),
+    'Печаль': GameInfo('грустит', game_config.GIF_SAD),
+    'Ударить': GameInfo('бьёт', game_config.GIF_HIT),
+    'Шлёп': GameInfo('шлёпает', game_config.GIF_SLAP),
+    'Тыкнуть': GameInfo('тыкает', game_config.GIF_POKE),
+    'Взять за руку': GameInfo('берёт за руку', game_config.GIF_TAKEHAND),
+    'Погладить': GameInfo('гладит', game_config.GIF_STROKE),
+    'Лизнуть': GameInfo('облизывает', game_config.GIF_LICK),
+    'Шок': GameInfo('в шоке', game_config.GIF_SHOCK),
+    # Следующие действия могут иметь разные описания при разном количестве участников
+    'Пить': GameInfo(game_config.DRINK_EMOJI, game_config.GIF_SMOKE),
+    'Курить': GameInfo('кур', game_config.GIF_SMOKE),
+    'Кальян': GameInfo('кальян', game_config.GIF_HOOKAH),
+    'Танцевать': GameInfo('танцу', game_config.GIF_DANCE)
+}
 
 
 async def bite_logic(ctx: discord.message) -> (str, str, str):

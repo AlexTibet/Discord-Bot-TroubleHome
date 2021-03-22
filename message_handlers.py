@@ -195,21 +195,21 @@ async def game_message(bot: discord.Client, ctx: discord.Message, channel: disco
 
     elif re.search(r"^[Пп]окормить\b", message[0]) and len(ctx.raw_mentions) > 0:
         await ban_handler(ctx, channel)
-        await channel.send(embed=await gen_embedded_reply.feed(ctx))
+        await channel.send(embed=await gen_embedded_reply.simple_game(ctx, 'Покормить'))
 
     elif (re.search(r"^[Пп]оцеловать\b", message[0]) or re.search(r"^[Зз]асосать\b", message[0]) or
             re.search(r"^[Цц]еловать\b", message[0])) and len(ctx.raw_mentions) > 0:
         await ban_handler(ctx, channel)
-        await channel.send(embed=await gen_embedded_reply.kiss(ctx))
+        await channel.send(embed=await gen_embedded_reply.simple_game(ctx, 'Поцеловать'))
 
     elif (re.search(r"^[Лл]юбить\b", message[0]) or re.search(r"^[Лл]юблю\b", message[0])) \
             and len(ctx.raw_mentions) > 0:
         await ban_handler(ctx, channel)
-        await channel.send(embed=await gen_embedded_reply.love(ctx))
+        await channel.send(embed=await gen_embedded_reply.simple_game(ctx, 'Любовь'))
 
     elif re.search(r"^[Уу]дарить\b", message[0]) and len(ctx.raw_mentions) > 0:
         await ban_handler(ctx, channel)
-        await channel.send(embed=await gen_embedded_reply.hit(ctx))
+        await channel.send(embed=await gen_embedded_reply.simple_game(ctx, 'Ударить'))
 
     elif re.search(r"^[Лл]ежать\b", message[1]) and len(ctx.raw_mentions) > 0:
         await ban_handler(ctx, channel)

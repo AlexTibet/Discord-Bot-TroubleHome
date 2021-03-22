@@ -27,8 +27,8 @@ async def banned_user(discord_id: int):
     return emb
 
 
-async def online_info():
-    info_rs = await server_info.bermuda_server_info((config.main_host, config.main_query_port))
+async def online_info(host, port):
+    info_rs = await server_info.bermuda_server_info((host, port))
     # info_ap = await server_info.bermuda_server_info((config.ap_host, config.ap_query_port))
     if info_rs is not None:
         emb = discord.Embed(
@@ -141,22 +141,35 @@ async def cuddle(ctx):
     return emb
 
 
-async def feed(ctx):
-    emb = discord.Embed(color=ctx.author.color)
-    emb.add_field(
-        name=f'Ням ням',
-        value=f"<@{ctx.author.id}> кормит <@{ctx.raw_mentions[0]}>")
-    emb.set_image(url=gif_url_elector(game_config.GIF_FEED))
-    return emb
+class GenGameEmbed:
+
+    def __init__(self, ctx: discord.Message, name: str):
+        self.ctx = ctx
+        self.name = name
+        self.emb = None
+
+    def _get_game_info(self):
+        self.game_info = game_logic.GAMES.get(self.name)
+
+    def _add_gif(self):
+        gifs = self.game_info.gifs
+        random.shuffle(gifs)
+        self.emb.set_image(url=random.choice(gifs))
+
+    def get_embed(self) -> discord.Embed:
+        self._get_game_info()
+        author = self.ctx.author.id
+        target = self.ctx.raw_mentions[0]
+        description = self.game_info.description
+        self.emb = discord.Embed(description=f"<@{author}> {description} <@{target}>", color=self.ctx.author.color)
+        self._add_gif()
+        return self.emb
 
 
-async def kiss(ctx):
-    emb = discord.Embed(color=ctx.author.color)
-    emb.add_field(
-        name=f'Поцелуй',
-        value=f"<@{ctx.author.id}> целует <@{ctx.raw_mentions[0]}>")
-    emb.set_image(url=gif_url_elector(game_config.GIF_KISS))
-    return emb
+async def simple_game(ctx, command):
+    game = GenGameEmbed(ctx, command)
+    return game.get_embed()
+
 
 
 async def love(ctx):
